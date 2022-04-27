@@ -1,16 +1,14 @@
-from flask import Flask, jsonify
-from flask import Flask
+from flask import Flask, jsonify, request 
+from flask_cors import CORS
+
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy   dog'
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.config.from_object(__name__)
+CORS(app, resources={r"/*":{'origins':"*"}})
+#CORS(app, resources={r'/*':{'origins': 'http://localhost:3000',"allow_headers": "Access-Control-Allow-Origin"}})
 
-cors = CORS(app, resources={r"/foo": {"origins": "http://localhost:3000"}})
-
-@app.route('/foo', methods=['POST'])
-@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
-def foo():
-    return request.json['inputVar']
-
-if __name__ == '__main__':
-   app.run()
+@app.route('/<string:s>',methods=['GET'])
+def movie(s):
+    return(s)
+if __name__ == "__main__":
+    app.run(debug=True)

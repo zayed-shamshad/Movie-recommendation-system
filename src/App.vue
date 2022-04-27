@@ -12,6 +12,7 @@
 <div class="loading" v-if="success">
     sucessfull !
     the recommended movie is {{this.ans}}
+    <div class="retry"><button class="retry-button" @click="reset">Back</button></div>
 </div>
 <div v-if="initial">
 <div class="main-search-input-wrap">
@@ -39,34 +40,29 @@ export default{
   }
 ,
 methods:{
-    /*showLoading:function(){
-        this.loading=true;
-        this.loading = false;
-        console.log("this is the msg+"+this.message);
-        //alert('cool');
-        this.message="";
-    },*/
     reset:function(){
         this.initial=true;
         this.showerror=false;
         this.loading=false;
         this.success=false;
-        this.message=""
+        this.message="";
+        this.ans="";
     },
     makeRequest:function () {
-         this.loading = true //the loading begin
-            axios.get('http://127.0.0.1:5000/'+this.message)
+            this.loading = true
+            const path="http://localhost:5000/"
+            axios.get(path+this.message)
             .then(response => {this.success=true;
-            this.initial=false ;
+            this.initial = false;
             this.loading = false;
-            this.showerror=false;
-            ans=response;
-            console.log(response);
+            this.showerror = false;
+            console.log(response.data);
+            this.ans=response.data
             }) // code to run on success
-            .catch(error => { this.showerror=true; this.initial=false}) // code to run on error
+            .catch(error => { this.showerror=true; this.initial=false;
+            console.log(error)}) // code to run on error
             .finally(() => (this.loading = false)) // set loading to false when request finish
-          
-}
+    }
 }
 }
 </script>
