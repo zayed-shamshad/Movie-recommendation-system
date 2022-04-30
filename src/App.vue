@@ -1,41 +1,42 @@
 <template>
-<nav>
-</nav>
-<div class="entry"><box id='boxx'>lol</box>
+<div class="entry">
 <div class="loading" v-if="loading">
-    Loading....
+    <img src="./assets/loading-23.gif">
 </div>
-<div class="loading" v-if="showerror">
-    error 404 :((((
+
+<div class="Error" v-if="showerror" >
+   <img src="./assets/please_ta.gif">
     <div class="retry"><button class="retry-button" @click="reset">retry</button></div>
 </div>
-<div class="loading" v-if="success">
-    sucessfull !
-    the recommended movie is {{this.ans}}
-    <div class="retry"><button class="retry-button" @click="reset">Back</button></div>
+
+<div class="successful" v-if="success" > 
+  <poster class="movie-poster" v-for="(item, key, index) in movies" v-bind:key= "index" :link= "item" :title= "key"></poster>
+   <div class="retry"><button class="retry-button" @click="reset">Back</button></div>
 </div>
 <div v-if="initial">
+<box id='boxx'></box>
 <div class="main-search-input-wrap">
      <div class="main-search-input fl-wrap">
-         <div class="main-search-input-item"> <input type="text" v-model="message" placeholder="Enter a movie name..."> </div> <button class="main-search-button" @click="makeRequest">GO !</button>
+         <div class="main-search-input-item"> <input type="text" v-model="message" placeholder="Enter a movie name..."> </div> <button class="main-search-button" @click="makeRequest">Recommend</button>
      </div>
- </div>
+</div>
 </div>
 </div>
 </template>
-<script>
+<script >
 import axios from 'axios'
 import BOX from './components/BOX.vue'
+import poster from './components/poster.vue'
 export default{
   name:'App',
-  components:{'box':BOX},
+  components:{'box':BOX,'poster':poster},
   data() {
       return{
         loading: false,
         success:false,
         initial:true,
         showerror:false,
-        ans:""
+        movies:"",
         }
   }
 ,
@@ -46,18 +47,18 @@ methods:{
         this.loading=false;
         this.success=false;
         this.message="";
-        this.ans="";
+        this.movies="";
     },
     makeRequest:function () {
             this.loading = true
+            this.initial=false
             const path="http://localhost:5000/"
             axios.get(path+this.message)
             .then(response => {this.success=true;
             this.initial = false;
             this.loading = false;
             this.showerror = false;
-            console.log(response.data);
-            this.ans=response.data
+            this.movies=response.data
             }) // code to run on success
             .catch(error => { this.showerror=true; this.initial=false;
             console.log(error)}) // code to run on error
@@ -79,7 +80,7 @@ nav{
     height:10vh;
     background-color:black;
     top:0;
-    position :absolute;
+    position :relative;
     z-index:10;
 }
 
@@ -121,8 +122,9 @@ nav{
     padding-left: 20px
 }
 
-.main-search-button {
-    background: #4DB7FE
+.main-search-button:hover{
+    background: #a59f9f;
+    color:rgb(255, 255, 255);
 }
 
 .main-search-button {
@@ -131,6 +133,7 @@ nav{
     height: 50px;
     width: 120px;
     color: #fff;
+    background: #000000;
     top: 0;
     border: none;
     border-top-right-radius: 0px;
@@ -176,13 +179,14 @@ nav{
         border-radius: 6px
     }
 }
-.entry{
-  background-image: url("./assets/movie poster 2.jpg");
-  width:100vw;
-  height:100vh;
-  margin:0;
-  padding:0;
-  z-index: -10;
+body{
+    background-image: url("./assets/movie poster 2.jpg");
+    background-attachment: fixed;
+    width:100vw;
+    height:100vh;
+    margin:0;
+    padding:0;
+    z-index: -10;
 }
 *{
 margin: 0;
@@ -210,17 +214,73 @@ padding: 0;
     background-color: rgba(0,0,0,.5);
     text-align: center;
     font-size: 10vh;
+    border:1px solid white;
+    border-radius:20px;
 }
 .retry{
-    position: relative;
-    padding: 10vh;
+    margin:50px;
+    padding:50px;
 }
 .retry-button{
     border:none;
     border-radius:5px;
     color:rgb(255, 249, 249);
-    height:5vh;
-    width:5vw;
-    background-color: #4DB7FE;
+    height:10vh;
+    width:10vw;
+    background-color: #000000;
+    font-size: 5vh;
 }
+.retry-button:hover{
+    color:rgb(255, 249, 249);
+   
+    background-color: #ababab;
+}
+.successful{
+    z-index:20;
+    position: absolute;
+    color:white;
+    text-align: center;
+    font-size: 3vh;
+    display: flex;
+    flex-direction: row;
+    flex-wrap:wrap;
+    margin:0;
+    padding: 0;
+}
+.movie-poster{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+ul{
+    list-style: none;
+}
+.Error{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    width:60vw;
+    height:50vh;
+    z-index:20;
+    position: absolute;
+    padding:2vh;
+    left:20vw;
+    color:white;
+    text-align: center;
+    font-size: 5vh;
+}
+.Error img{
+    border-radius:20px;
+}
+
+.img-responsive {
+  width: 20vw;
+  max-width:500px;
+}
+.loading img{
+    width:30vw;
+    top:10vh;
+}
+
 </style>

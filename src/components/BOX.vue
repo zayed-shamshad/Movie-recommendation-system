@@ -1,5 +1,5 @@
 <template>
- <div id="outside-box">
+<div id="outside-box">
  </div>
 </template>
 <script >
