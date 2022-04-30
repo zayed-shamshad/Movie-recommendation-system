@@ -2,15 +2,18 @@
 <div id="poster-box" data-tilt data-tilt-reverse="true">
    <div> <h4>{{title}}</h4></div>
     <img class="img-responsive" v-bind:src= "link">
+    <div> <h4>{{review}}</h4></div>
  </div>
 </template>
 <script >
 export default {
-
     name:'poster',
     props: {
     title: String,
-    link: String
+    link: String,
+    review:String,
+},
+methods:function(){
 },
 mounted() {
     let Script = document.createElement("script");
@@ -41,5 +44,10 @@ padding:5px;
 }
 #poster-box img{
     border-radius: 25px;
+}
+a{
+    font-style: none;
+    color:white;
+    text-decoration: none;
 }
 </style>

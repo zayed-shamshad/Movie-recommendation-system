@@ -52,7 +52,7 @@ class Movie_Recommender():
     def recommend(self,movie_name):
         temp = self.find_reccs(movie_name)
         if(type(temp) == type('Zaid')):
-            return ['Nan']
+            return ['']
         temp = temp.iloc[:,0:1].values
         mobie = []
         for i in range(len(temp)):

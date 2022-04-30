@@ -5,13 +5,14 @@
 </div>
 
 <div class="Error" v-if="showerror" >
-   <img src="./assets/please_ta.gif">
-    <div class="retry"><button class="retry-button" @click="reset">retry</button></div>
+   <img src="./assets/Try-again.jpg">
+    <div class="back"><button class="back-button" @click="reset">retry</button></div>
 </div>
 
 <div class="successful" v-if="success" > 
-  <poster class="movie-poster" v-for="(item, key, index) in movies" v-bind:key= "index" :link= "item" :title= "key"></poster>
-   <div class="retry"><button class="retry-button" @click="reset">Back</button></div>
+
+  <poster class="movie-poster" v-for="(item, key, index) in movies" v-bind:key= "index" :link= "item" :title= "key" :review= "overview[key]"></poster>
+  <div class="retry"><button class="retry-button" @click="reset">Back</button></div>
 </div>
 <div v-if="initial">
 <box id='boxx'></box>
@@ -37,6 +38,7 @@ export default{
         initial:true,
         showerror:false,
         movies:"",
+        overview:"",
         }
   }
 ,
@@ -48,6 +50,7 @@ methods:{
         this.success=false;
         this.message="";
         this.movies="";
+        this.overview="";
     },
     makeRequest:function () {
             this.loading = true
@@ -58,7 +61,10 @@ methods:{
             this.initial = false;
             this.loading = false;
             this.showerror = false;
-            this.movies=response.data
+            this.movies=response.data['1']
+            this.overview=response.data['2']
+            console.log(this.movies)
+            console.log(this.overview)
             }) // code to run on success
             .catch(error => { this.showerror=true; this.initial=false;
             console.log(error)}) // code to run on error
@@ -72,7 +78,8 @@ methods:{
     background: #fff;
     padding: 0 120px 0 0;
     border-radius: 1px;
-    margin-top: 200px;
+    margin-top: 40vh;
+    margin-left: auto;
     box-shadow: 0px 0px 0px 6px rgba(255, 255, 255, 0.3)
 }
 nav{
@@ -97,7 +104,6 @@ nav{
     width: 50px;
     height: 1px;
     background: rgba(255, 255, 255, 0.41);
-    left: 50%;
     margin-left: -25px
 }
 
@@ -144,7 +150,8 @@ nav{
 .main-search-input-wrap {
     max-width: 500px;
     left:30vw;
-    position: relative
+    right:30vw;
+    position: absolute;
 }
 
 :focus {
@@ -199,9 +206,8 @@ padding: 0;
   top:20vh;
   background-color: rgba(0,0,0,.5);
   color: #fff;
-  border-radius: 10px;
+  border-radius: 25px;
   left:20vw;
-  border:2px solid white
 }
 .loading{
     width:60vw;
@@ -217,9 +223,32 @@ padding: 0;
     border:1px solid white;
     border-radius:20px;
 }
-.retry{
+.back{
     margin:50px;
     padding:50px;
+}
+.retry{
+    margin:20px;
+    padding:20px;
+    position:fixed;
+    transform: translateZ(20px);
+    right:5px;
+    bottom:5px;
+    z-index: 1000;
+}
+.back-button{
+    border:none;
+    border-radius:5px;
+    color:rgb(255, 249, 249);
+    height:10vh;
+    width:10vw;
+    background-color: #000000;
+    font-size: 5vh;
+}
+.back-button:hover{
+    color:rgb(255, 249, 249);
+   
+    background-color: #ababab;
 }
 .retry-button{
     border:none;
@@ -272,6 +301,7 @@ ul{
 }
 .Error img{
     border-radius:20px;
+    width:25vw;
 }
 
 .img-responsive {

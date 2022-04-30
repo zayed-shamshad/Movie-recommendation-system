@@ -28,8 +28,8 @@ def movie(s):
         result_dict[i] = result_list[i]
     
     #result={1:"Batman",2:"Superman",3:"Iron-man",4:"Hulk",5:"Thor",6:"Loki",7:"Spiderman",8:"Captain-America",9:"IT",10:"Joker"}
-    image_source = []
     image_dict = {}
+    overview_dict={}
     for movie_names in result_list:
         r = requests.get("https://api.themoviedb.org/3/search/movie?api_key=80a99c25c9f9f65e580f9c9e19d1d737&query="+movie_names+ "&callback=?")
         content=r.text
@@ -38,9 +38,13 @@ def movie(s):
         m=json.loads(k)
         f=str(m['results'][0]['poster_path'])
         path_name='http://image.tmdb.org/t/p/w500/'+f
-        image_source.append(path_name)
+        overview=str(m['results'][0]['overview'])
         image_dict[movie_names] = path_name
-    print(image_dict)
-    return jsonify(image_dict)
+        overview_dict[movie_names]=overview
+    info={}
+    info['1']=image_dict
+    info['2']=overview_dict
+    print(info)
+    return jsonify(info)
 if __name__ == "__main__":
     app.run(debug=True)
