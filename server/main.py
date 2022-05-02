@@ -44,7 +44,6 @@ def movie(s):
     info={}
     info['1']=image_dict
     info['2']=overview_dict
-    print(info)
     return jsonify(info)
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,8 +1,25 @@
 <template>
-<div id="poster-box" data-tilt data-tilt-reverse="true">
-   <div> <h4>{{title}}</h4></div>
+<div id="poster-box" data-tilt data-tilt-reverse="true" @click="showModall">
+    <div> <h4>{{title}}</h4></div>
     <img class="img-responsive" v-bind:src= "link">
-    <div> <h4>{{review}}</h4></div>
+
+<Teleport to="body">
+     <transition name="pop" appear>
+    <div class="modal-overlay" v-if="showModal" @click="showModall=false"></div>
+   </transition>
+   <transition name="slide" appear>
+    <div v-if="showModal" class="modal">
+    <h1>{{title}}</h1>
+   <p>{{review}}</p>
+   <button class="but" @click="close">
+    Close
+   </button>
+   </div>
+   </transition>
+    
+</Teleport>
+  
+
  </div>
 </template>
 <script >
@@ -12,9 +29,22 @@ export default {
     title: String,
     link: String,
     review:String,
-},
-methods:function(){
-},
+    },
+data(){
+    return{
+      showModal:false
+    }
+}
+,
+methods:{
+    showModall:function(){
+        this.showModal=!this.showModal;
+    },
+    close:function(){
+        this.showModal=false;
+    }
+}
+    ,
 mounted() {
     let Script = document.createElement("script");
     Script.setAttribute("src", "https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.js");
@@ -22,11 +52,10 @@ mounted() {
   }
 }
 </script>
-<style >
+<style>
 #poster-box{
 z-index: 100;
 width:30vw;
-background-color: rgba(255, 255, 255, 0.41);
 padding:5px;
 display: flex;
 border-radius: 20px;
@@ -50,4 +79,43 @@ a{
     color:white;
     text-decoration: none;
 }
+.modal-overlay {
+    z-index: 100000;
+ position: fixed;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ z-index: 98;
+ background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal {
+    z-index: 10000;
+ position: fixed;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ z-index: 99;
+ 
+ width: 100%;
+ max-width: 400px;
+ background-color: #FFF;
+ border-radius: 16px;
+ 
+ padding: 25px;
+}
+.modal h1{ 
+  color: #222;
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 15px;
+}
+ .modal p{
+  color: #666;
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 15px;
+ }
+ 
 </style>

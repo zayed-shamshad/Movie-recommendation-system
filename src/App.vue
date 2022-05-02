@@ -176,7 +176,7 @@ nav{
 
     .main-search-input-item input {
         border-radius: 6px !important;
-        background: #fff
+        background: rgb(255, 255, 255)
     }
 
     .main-search-button {
@@ -208,6 +208,10 @@ padding: 0;
   color: #fff;
   border-radius: 25px;
   left:20vw;
+  transition: 0.4s ease-out;
+  &:hover{
+      box-shadow: 6px 6px rgba(203, 203, 203, 0.8);
+  }
 }
 .loading{
     width:60vw;
@@ -220,8 +224,7 @@ padding: 0;
     background-color: rgba(0,0,0,.5);
     text-align: center;
     font-size: 10vh;
-    border:1px solid white;
-    border-radius:20px;
+    border-radius:25px;
 }
 .back{
     margin:50px;
@@ -238,7 +241,7 @@ padding: 0;
 }
 .back-button{
     border:none;
-    border-radius:5px;
+    border-radius:15px;
     color:rgb(255, 249, 249);
     height:10vh;
     width:10vw;
@@ -309,8 +312,49 @@ ul{
   max-width:500px;
 }
 .loading img{
-    width:30vw;
-    top:10vh;
+    width:40vw;
+    top:15vh;
 }
+.fade-enter-active,
+.fade-leave-active {
+ transition: opacity .5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+ opacity: 0;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+ transition: transform .5s;
+}
+
+.slide-enter,
+.slide-leave-to {
+ transform: translateY(-50%) translateX(100vw);
+}
+
+.but {
+ appearance: none;
+ outline: none;
+ border: none;
+ background: none;
+ cursor: pointer;
+ display: inline-block;
+ padding: 15px 25px;
+ background-image: linear-gradient(to right, #CC2E5D, #FF5858);
+ border-radius: 8px;
+ 
+ color: #FFF;
+ font-size: 18px;
+ font-weight: 700;
+ 
+ box-shadow: 3px 3px rgba(0, 0, 0, 0.4);
+ transition: 0.4s ease-out;
+ }
+ .but :hover{
+  box-shadow: 6px 6px rgba(0, 0, 0, 0.6);
+ }
 
 </style>
