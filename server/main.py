@@ -7,12 +7,14 @@ import json
 import json
 import io
 
-from load_data import Movie_Recommender
+from recommender import Movie_Recommender
 
 '''Loading the Data and Creating the instance for the model'''
-from load_data import Movie_Recommender
+
 Recommender = Movie_Recommender()
 Recommender.prepare()
+
+Recommender.clean()
 
 app = Flask(__name__)
 

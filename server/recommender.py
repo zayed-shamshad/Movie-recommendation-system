@@ -1,5 +1,5 @@
-
 import pandas as pd
+import numpy as np
 from scipy.sparse import csr_matrix
 import pickle
 from sklearn.neighbors import NearestNeighbors as KNN
@@ -33,29 +33,30 @@ class Movie_Recommender():
             self.movies_names['title'][i] = temp
 
     def prepare(self):
-        users = self.ratings.userId.unique()
-        movies = self.ratings.movieId.unique()
-        self.userid2idx = {o:i for i,o in enumerate(users)}
-        self.movieid2idx = {o:i for i,o in enumerate(movies)}
-        self.ratings['userId'] = self.ratings['userId'].apply(lambda x: userid2idx[x])
-        self.ratings['movieId'] = self.ratings['movieId'].apply(lambda x: movieid2idx[x])
+        self.users = self.ratings.userId.unique()
+        self.movies = self.ratings.movieId.unique()
+        self.userid2idx = {o:i for i,o in enumerate(self.users)}
+        self.movieid2idx = {o:i for i,o in enumerate(self.movies)}
+        self.ratings['userId'] = self.ratings['userId'].apply(lambda x: self.userid2idx[x])
+        self.ratings['movieId'] = self.ratings['movieId'].apply(lambda x: self.movieid2idx[x])
         split = np.random.rand(len(self.ratings)) < 0.8
-        self.train = ratings[split]
-        self.valid = ratings[~split]
+        self.train = self.ratings[split]
+        self.valid = self.ratings[~split]
         self.utils = self.ratings.pivot(index='userId',columns='movieId',values='rating')
         self.util.fillna(0, inplace = True)
+        self.final_users = csr_matrix(self.util)
 
     def encode_movies(self,names):
-        n, m = final_users.shape
+        n, m = self.final_users.shape
         arr = np.zeros((1,m),dtype = 'float32')
 
         count = 0
         for name in names:
             name = name.lower()
-            movie_list = movies_names[movies_names['title'].str.contains(name)]
+            movie_list = self.movies_names[self.movies_names['title'].str.contains(name)]
             if len(movie_list):        
                 movie_idx= movie_list.iloc[0]['movieId']
-                movie_idx = movies_names[movies_names['movieId'] == movie_idx].index[0]
+                movie_idx = self.movies_names[self.movies_names['movieId'] == movie_idx].index[0]
                 arr[0,movie_idx] = 5.0
                 count+=1
         temp = csr_matrix(arr)
@@ -64,26 +65,27 @@ class Movie_Recommender():
         else:
             return temp
     def find_reccs(self,inp):
-        preds = self.Neural_network.predict([pd.Series([533 for i in range(len(movies))]),pd.Series([i for i in range(len(movies))])])
+        preds = self.Neural_network.predict([pd.Series([inp for i in range(len(self.movies))]),pd.Series([i for i in range(len(self.movies))])])
         preds = np.ndarray.flatten(preds)
-        ids = [i for i in range(len(movies))]
+        ids = [i for i in range(len(self.movies))]
         preds, ids = zip(*sorted(zip(preds, ids)))
         reccs = []
         for i in ids[:10]:
-            reccs.append(movies_names[movies_names['movieId']==i]['title'].values[0])
+            reccs.append(self.movies_names[self.movies_names['movieId']==i]['title'].values[0])
         return reccs
 
     def recommend(self,movie_name):
         movie_name = movie_name.split(',')
-        encoded_inp = encode_movies(encoded_inp)
+        encoded_inp = self.encode_movies(encoded_inp)
         if len(encoded_inp)==0:
             return encoded_inp
-        reccs = find_reccs(encoded_inp)
+        reccs = self.find_reccs(encoded_inp)
         return reccs
         
 if __name__ == '__main__':
     Recommender = Movie_Recommender()
     Recommender.prepare()
+    Recommender.clean()
     print(Recommender.recommend("Iron Man"))
         
         

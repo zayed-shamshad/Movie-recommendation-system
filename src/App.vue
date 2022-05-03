@@ -55,7 +55,7 @@ methods:{
     makeRequest:function () {
             this.loading = true
             this.initial=false
-            const path="http://localhost:5000/"
+            const path="https://movie-api-backend-a-z.herokuapp.com/"
             axios.get(path+this.message)
             .then(response => {this.success=true;
             this.initial = false;
