@@ -6,24 +6,28 @@
 
 <div class="Error" v-if="showerror" >
    <img src="./assets/Try-again.jpg">
-    <div class="back"><button class="back-button" @click="reset">retry</button></div>
+    <div class="retry"><button class="retry-button" @click="reset">retry</button></div>
 </div>
 
 <div class="successful" v-if="success" > 
 
   <poster class="movie-poster" v-for="(item, key, index) in movies" v-bind:key= "index" :link= "item" :title= "key" :review= "overview[key]"></poster>
-  <div class="retry"><button class="retry-button" @click="reset">Back</button></div>
+  <div class="back"><button class="back-button" @click="reset">Back</button></div>
 </div>
 <div v-if="initial">
 <box id='boxx'></box>
 <div class="main-search-input-wrap">
      <div class="main-search-input fl-wrap">
-         <div class="main-search-input-item"> <input type="text" v-model="message" placeholder="Enter a movie name..."> </div> <button class="main-search-button" @click="makeRequest">Recommend</button>
+         <div class="main-search-input-item">
+         <input type="text" v-model="message" placeholder="Enter a movie name..."> 
+         </div>
+          <button class="main-search-button" @click="makeRequest">Recommend</button>
+         </div>
+         </div>
      </div>
 </div>
-</div>
-</div>
 </template>
+
 <script >
 import axios from 'axios'
 import BOX from './components/BOX.vue'
@@ -94,7 +98,7 @@ nav{
 .fl-wrap {
     float: left;
     width: 100%;
-    position: relative
+    position: relative;
 }
 
 .main-search-input:before {
@@ -119,20 +123,17 @@ nav{
 .main-search-input-item input:first-child {
     border-radius: 100%
 }
-
 .main-search-input-item input {
     float: left;
     border: none;
     width: 100%;
     height: 50px;
-    padding-left: 20px
+    padding-left:20px;
 }
-
 .main-search-button:hover{
     background: #a59f9f;
     color:rgb(255, 255, 255);
 }
-
 .main-search-button {
     position: absolute;
     right: 0px;
@@ -146,26 +147,23 @@ nav{
     border-bottom-right-radius: 0px;
     cursor: pointer
 }
-
 .main-search-input-wrap {
     max-width: 500px;
     left:30vw;
     right:30vw;
     position: absolute;
 }
-
 :focus {
     outline: 0
 }
-
 @media only screen and (max-width: 768px) {
+   
     .main-search-input {
         background: rgba(255, 255, 255, 0.2);
-        padding: 14px 20px 10px;
+        padding: 10px;
         border-radius: 10px;
         box-shadow: 0px 0px 0px 10px rgba(255, 255, 255, 0.0)
     }
-
     .main-search-input-item {
         width: 100%;
         border: 1px solid #eee;
@@ -173,12 +171,14 @@ nav{
         border: none;
         margin-bottom: 10px
     }
-
     .main-search-input-item input {
         border-radius: 6px !important;
-        background: rgb(255, 255, 255)
+        background: rgb(255, 255, 255);
+        position: relative;
+        float: left;
+        width: 88%;
+        border-radius: 6px
     }
-
     .main-search-button {
         position: relative;
         float: left;
@@ -218,7 +218,7 @@ padding: 0;
     height:50vh;
     z-index:20;
     position: absolute;
-    top:20vh;
+    top:25vh;
     left:20vw;
     color:white;
     background-color: rgba(0,0,0,.5);
@@ -226,11 +226,11 @@ padding: 0;
     font-size: 10vh;
     border-radius:25px;
 }
-.back{
+.retry{
     margin:50px;
     padding:50px;
 }
-.retry{
+.back{
     margin:20px;
     padding:20px;
     position:fixed;
@@ -239,30 +239,29 @@ padding: 0;
     bottom:5px;
     z-index: 1000;
 }
-.back-button{
-    border:none;
-    border-radius:15px;
-    color:rgb(255, 249, 249);
-    height:10vh;
-    width:10vw;
-    background-color: #000000;
-    font-size: 5vh;
-}
-.back-button:hover{
-    color:rgb(255, 249, 249);
-   
-    background-color: #ababab;
-}
 .retry-button{
-    border:none;
-    border-radius:5px;
+    border:2px solid white;
+    border-radius:10px;
     color:rgb(255, 249, 249);
-    height:10vh;
-    width:10vw;
+    height:7vh;
+    width:9vw;
     background-color: #000000;
-    font-size: 5vh;
+    font-size: 2.4vw;
 }
 .retry-button:hover{
+    color:rgb(255, 249, 249);
+    background-color: #ababab;
+}
+.back-button{
+    border:2px solid white;
+    border-radius:5px;
+    color:rgb(255, 249, 249);
+    height:6vh;
+    width:9vw;
+    background-color: #000000;
+    font-size: 2.4vw;
+}
+.back-button:hover{
     color:rgb(255, 249, 249);
    
     background-color: #ababab;
@@ -292,19 +291,18 @@ ul{
     flex-direction: column;
     align-content: center;
     align-items: center;
-    width:60vw;
     height:50vh;
+    width:100%;
     z-index:20;
+    top:100px;
     position: absolute;
-    padding:2vh;
-    left:20vw;
     color:white;
     text-align: center;
     font-size: 5vh;
 }
 .Error img{
     border-radius:20px;
-    width:25vw;
+    width:36vh;
 }
 
 .img-responsive {
@@ -312,8 +310,8 @@ ul{
   max-width:500px;
 }
 .loading img{
-    width:40vw;
-    top:15vh;
+    width:37vh;
+    top:23vh;
 }
 .fade-enter-active,
 .fade-leave-active {

@@ -1,6 +1,6 @@
 <template>
 <div id="poster-box" data-tilt data-tilt-reverse="true" @click="showModall">
-    <div> <h4>{{title}}</h4></div>
+    <div> <h4>{{title.toUpperCase()}}</h4></div>
     <img class="img-responsive" v-bind:src= "link">
 
 <Teleport to="body">
@@ -16,10 +16,7 @@
    </button>
    </div>
    </transition>
-    
 </Teleport>
-  
-
  </div>
 </template>
 <script >
@@ -70,6 +67,7 @@ background-color: rgb(119, 119, 119);
 border-radius: 5px;
 margin: 10px;
 padding:5px;
+font-size: 2.8vw;
 }
 #poster-box img{
     border-radius: 25px;
