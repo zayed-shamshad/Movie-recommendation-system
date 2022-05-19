@@ -96,7 +96,7 @@ a{
  transform: translate(-50%, -50%);
  z-index: 99;
  
- width: 100%;
+ width: 60%;
  max-width: 400px;
  background-color: #FFF;
  border-radius: 16px;

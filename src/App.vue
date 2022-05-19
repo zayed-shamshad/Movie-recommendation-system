@@ -226,6 +226,10 @@ padding: 0;
     font-size: 10vh;
     border-radius:25px;
 }
+.loading img{
+    width:37vh;
+    top:50vh;
+}
 .retry{
     margin:50px;
     padding:50px;
@@ -263,7 +267,6 @@ padding: 0;
 }
 .back-button:hover{
     color:rgb(255, 249, 249);
-   
     background-color: #ababab;
 }
 .successful{
@@ -282,6 +285,7 @@ padding: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    padding:5px
 }
 ul{
     list-style: none;
@@ -309,10 +313,7 @@ ul{
   width: 20vw;
   max-width:500px;
 }
-.loading img{
-    width:37vh;
-    top:23vh;
-}
+
 .fade-enter-active,
 .fade-leave-active {
  transition: opacity .5s;
@@ -341,7 +342,7 @@ ul{
  cursor: pointer;
  display: inline-block;
  padding: 15px 25px;
- background-image: linear-gradient(to right, #CC2E5D, #FF5858);
+ background-color: black;
  border-radius: 8px;
  
  color: #FFF;
