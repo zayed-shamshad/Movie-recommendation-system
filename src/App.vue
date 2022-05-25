@@ -10,10 +10,10 @@
 </div>
 
 <div class="successful" v-if="success" > 
-
-  <poster class="movie-poster" v-for="(item, key, index) in movies" v-bind:key= "index" :link= "item" :title= "key" :review= "overview[key]"></poster>
+  <poster v-for="(item, key, index) in movies" v-bind:key= "index" :link= "item" :title= "key" :review= "overview[key]"></poster>
   <div class="back"><button class="back-button" @click="reset">Back</button></div>
 </div>
+
 <div v-if="initial">
 <box id='boxx'></box>
 <div class="main-search-input-wrap">
@@ -21,7 +21,7 @@
          <div class="main-search-input-item">
          <input type="text" v-model="message" placeholder="Enter a movie name..."> 
          </div>
-          <button class="main-search-button" @click="makeRequest">Recommend</button>
+          <button class="main-search-button" @click="makeRequest" @keyup.enter="makeRequest">Recommend</button>
          </div>
          </div>
      </div>
@@ -86,14 +86,7 @@ methods:{
     margin-left: auto;
     box-shadow: 0px 0px 0px 6px rgba(255, 255, 255, 0.3)
 }
-nav{
-    width:100vw;
-    height:10vh;
-    background-color:black;
-    top:0;
-    position :relative;
-    z-index:10;
-}
+
 
 .fl-wrap {
     float: left;
@@ -262,8 +255,9 @@ padding: 0;
     color:rgb(255, 249, 249);
     height:6vh;
     width:9vw;
+    min-width: 50px;
     background-color: #000000;
-    font-size: 2.4vw;
+    font-size: 1rem;
 }
 .back-button:hover{
     color:rgb(255, 249, 249);
@@ -271,21 +265,14 @@ padding: 0;
 }
 .successful{
     z-index:20;
-    position: absolute;
     color:white;
     text-align: center;
-    font-size: 3vh;
-    display: flex;
-    flex-direction: row;
-    flex-wrap:wrap;
-    margin:0;
-    padding: 0;
-}
-.movie-poster{
-    display: flex;
+    font-size: 3rem;
+    display:flex;
     flex-direction: row;
     flex-wrap: wrap;
-    padding:5px
+    margin:0px;
+    padding: 0px;
 }
 ul{
     list-style: none;
@@ -310,8 +297,8 @@ ul{
 }
 
 .img-responsive {
-  width: 20vw;
-  max-width:500px;
+  width: 300px;
+  min-width: 200px;
 }
 
 .fade-enter-active,

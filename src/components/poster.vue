@@ -2,9 +2,8 @@
 <div id="poster-box" data-tilt data-tilt-reverse="true" @click="showModall">
     <div> <h4>{{title.toUpperCase()}}</h4></div>
     <img class="img-responsive" v-bind:src= "link">
-
 <Teleport to="body">
-     <transition name="pop" appear>
+    <transition name="slide" appear>
     <div class="modal-overlay" v-if="showModal" @click="showModall=false"></div>
    </transition>
    <transition name="slide" appear>
@@ -15,7 +14,7 @@
     Close
    </button>
    </div>
-   </transition>
+    </transition>
 </Teleport>
  </div>
 </template>
@@ -25,7 +24,7 @@ export default {
     props: {
     title: String,
     link: String,
-    review:String,
+    review: String,
     },
 data(){
     return{
@@ -52,23 +51,23 @@ mounted() {
 <style>
 #poster-box{
 z-index: 100;
-width:30vw;
+width:310px;
 padding:5px;
+margin:20px;
 display: flex;
 border-radius: 20px;
 flex-direction: column;
 align-content: center;
 align-items: center;
-margin: 10px;
-transform: translateZ(20px);
 }
+
 div h4{
-background-color: rgb(119, 119, 119);
 border-radius: 5px;
 margin: 10px;
 padding:5px;
-font-size: 2.8vw;
+font-size: 1.5rem;
 }
+
 #poster-box img{
     border-radius: 25px;
 }
@@ -84,24 +83,20 @@ a{
  left: 0;
  right: 0;
  bottom: 0;
- z-index: 98;
  background-color: rgba(0, 0, 0, 0.3);
 }
 
 .modal {
-    z-index: 10000;
- position: fixed;
- top: 50%;
- left: 50%;
- transform: translate(-50%, -50%);
- z-index: 99;
- 
- width: 60%;
- max-width: 400px;
- background-color: #FFF;
- border-radius: 16px;
- 
- padding: 25px;
+    z-index: 10000000;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 400px;
+    background-color: #FFF;
+    border-radius: 16px;
+    padding: 25px;
 }
 .modal h1{ 
   color: #222;
