@@ -1,13 +1,12 @@
 <template>
     <div class="search-outerbox">
         <div class="wave">
-            <div v-for="i in 20" :key='i' class="wave-inner" :id="i">
+            <div v-for="i in 30" :key='i' class="wave-inner" :id="i">
             </div>
         </div>
         <div v-if="searched" class="movie-box">
-            <button @click="searched=false">
-               x
-            </button>
+           
+                <font-awesome-icon icon="close" @click="searched=false"></font-awesome-icon>
             <poster :title="movies[ind]" :link="links[ind]" :review="overview[ind]">
             </poster>
             <div class="bottom-buttons">
@@ -21,10 +20,10 @@
             </div>
         </div>
         <div class="search-innerbox" v-if="!searched">
-        <div class="search-title">
-           type in the name of the movie
-        </div>
-            <input type="text" v-model="movie" placeholder="Search...">
+            <div class="search-title">
+                Type in the name of the movie
+            </div>
+            <input type="text" v-model="movie" placeholder="Enter the movie name...">
             <button @click="makeRequest" class="search-movie">
                 Search
             </button>
@@ -47,7 +46,7 @@ export default {
         return{
             movies:[],
             overview:[],
-            movie:'',
+            movie:'eg: batman...',
             searched:false,
             links:[],
             ind:0,
@@ -158,6 +157,11 @@ export default {
 .heart{
     font-size: 1.5em;
     cursor:pointer;
+    transition: all 0.24s ease-in-out;
+}
+.heart:hover{
+    transform:scale(1.2);
+    
 }
 
 .filled-in {
@@ -173,6 +177,22 @@ export default {
     margin:10px;
 }
 
+.bottom-buttons button{
+    height:30px;
+    width:80px;
+    border-radius:5px;
+    border:none;
+    background-color: rgb(161, 0, 0);
+    color:white;
+    font-size: 1rem;
+    font-weight: bold;
+    transition:all 0.2s ease-in-out;
+    cursor:pointer;
+}
+.bottom-buttons button:hover{
+    background-color: red;
+    color:white;
+}
 .movie-box{
     display: flex;
     flex-direction: column;
@@ -266,33 +286,33 @@ export default {
 
 @keyframes wave {
     0% {
-        /* transform: translateY(0) scale(1); */
+        transform: translateY(0) scale(1);
 
-         transform: rotate(0deg);
+         /* transform: rotate(0deg); */
     }
 
     25% {
-        /* transform: translateY(-100px) scale(0); */
+        transform: translateY(-100px) scale(0);
 
-        transform: rotate(90deg);
+        /* transform: rotate(90deg); */
     }
 
     50% {
-        /* transform: translateY(0) scale(1); */
+        transform: translateY(0) scale(1);
 
-        transform: rotate(0deg);
+        /* transform: rotate(0deg); */
     }
 
     75% {
-        /* transform: translateY(100px) scale(0); */
+        transform: translateY(100px) scale(0);
 
-        transform: rotateX(90deg);
+        /* transform: rotate(90deg); */
     }
 
     100% {
-        /* transform: translateY(0) scale(1); */
+        transform: translateY(0) scale(1);
 
-        transform: rotate(0deg);
+        /* transform: rotate(0deg); */
     }
 
 }

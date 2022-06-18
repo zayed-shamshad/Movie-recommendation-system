@@ -20,7 +20,7 @@
                 <font-awesome-icon icon="envelope" class="icons"></font-awesome-icon>
                 {{email}}
             </div>
-            <div @click="openfav();closeprofile()" class="username">
+            <div @click="openfav();closeprofile()" class="username" v-if="state=='LOGOUT'">
                 <font-awesome-icon icon="star" class="icons"></font-awesome-icon>
                 favourites
             </div>
@@ -32,22 +32,20 @@
     </div>
     <div class="login" v-if="state=='LOGIN'">
         <div class="close-popup" @click="closepopup">
-            cross
+            <font-awesome-icon icon="close"></font-awesome-icon>
         </div>
-        <label>
-            email
-        </label>
+        SIGN IN
+
         <input type="email" v-model="email" placeholder="email">
 
-        <label>
-            password
-        </label>
         <input type="password" v-model="password" placeholder="Password">
 
         <button @click="submit" class="submit-button">
+            <font-awesome-icon icon="sign-in" class="icons"></font-awesome-icon>
             Login
         </button>
         <button class="google-button" @click="googlesignup">
+            <font-awesome-icon :icon='["fab","google"]' class="icons"></font-awesome-icon>
             signup with google
         </button>
     </div>
@@ -56,10 +54,12 @@
             Logout ?
         </div>
         <div>
-            <button @click="logout" class="submit-button">
+            <button @click="logout">
+                <font-awesome-icon icon="sign-out" class="icons"></font-awesome-icon>
                 Logout
             </button>
             <button @click="closeLogout">
+                <font-awesome-icon icon="close" class="icons"></font-awesome-icon>
                 Cancel
             </button>
         </div>
@@ -78,7 +78,7 @@
                 <router-link to="/" @click="toggle">HOME</router-link>
             </li>
             <li>
-                <router-link to="/movie">MOVIES</router-link>
+                <router-link to="/movies">MOVIES</router-link>
             </li>
             <li>
                 <router-link to="/blog">BlOGS</router-link>
@@ -109,24 +109,10 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
 .username{
-    cursor: pointer;
+        cursor: pointer;
         transition: all 0.3s ease-in-out;
         display: flex;
         width: 100%;
@@ -136,6 +122,9 @@
         font-size: 1rem;
         margin: 5px;
 
+}
+.username:hover{
+    transform: scale(1.1);
 }
 .profileheader{
     width:300px;
@@ -167,18 +156,15 @@
 .profileheader div:hover::before {
     width: 00%;
 } */
-.profileheader div:hover{
-    transform: scale(1.1);
-  
-}
+
 .openprofile{
     width:60px;
     height:60px;
     background-color : rgba(0, 0, 0, 0.2);
     z-index:100;
     display:flex;
-    top:0px;
-    left:0px;
+    top:20px;
+    right:100px;
     border-radius:50%;
     position:absolute;
     flex-direction:column;
@@ -193,8 +179,8 @@
     position: fixed;
     width:0vw;
     left:0px;
-    top:10vh;;
-    height:90vh;
+    top:0vh;;
+    height:100vh;
     background: rgba(0, 0, 0, 0.7);
     z-index: 25;
     display:flex;
@@ -202,7 +188,7 @@
     align-items: center;
     flex-direction:column;
     font-size:10px;
-    transition:all 0.5s ease-in-out;
+    transition:all 0.25s ease-in-out;
     overflow-x:hidden;
 }
 .avatar{
@@ -222,7 +208,7 @@
 }
 .closeprofile:hover {
   color:red;
- transform:translate(0,0) scale(0.9);
+ transform:translate(0,0) scale(1.1);
 }
 
 
@@ -240,10 +226,17 @@
     justify-content: space-evenly;
     border-radius: 20px;
     transform: translateY(100%);
-    transition: all 0.5s ease-in-out;
+    transition: all 0.25s ease-in-out;
     opacity: 0;
     transform: scale(0);
     color: black;
+    }
+    .logout div:first-child{
+        display:flex;
+        font-size: 1.3rem;
+        border-bottom:rgb(0, 0, 0) solid 1px;
+       
+        justify-content:space-evenly;
     }
     .logout button{
         background: rgb(255, 255, 255);
@@ -251,10 +244,22 @@
         border-radius: 20px;
         padding: 10px;
         font-size: 20px;
+        margin-right:10px;
         font-family: 'Cairo', sans-serif;
         color: black;
-        transition: all 0.5s ease-in-out;
+        transition: all 0.2s ease-in-out;
+        cursor:pointer;
     }
+    .logout button:hover{
+        border: none;
+        border-radius: 20px;
+        padding: 10px;
+        font-size: 20px;
+        font-family: 'Cairo', sans-serif;
+        color: red;
+        cursor:pointer;
+    }
+
 .login{
     width:30vw;
     position: absolute;
@@ -269,7 +274,7 @@
     justify-content: space-evenly;
     border-radius: 20px;
     transform: translateY(100%);
-    transition: all 0.5s ease-in-out;
+    transition: all 0.3s ease-in-out;
     opacity:0;
     transform:scale(0);
     color:black;
@@ -277,38 +282,52 @@
 
 .login input{
     width:20vw;
+    padding:10px;
+    font-size:17px;
+    font-family: 'Cairo', sans-serif;
+    border:none;
+    border-bottom:2px solid black;
+}
+.login input:focus {
+   border-bottom:2px solid green;
+   outline:none;
+}
+.submit-button{
+    width:20vw;
+    letter-spacing: 10px;
+    border-radius: 20px;
+    padding:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction: row;
+    font-size:17px;
+    font-family: 'Cairo', sans-serif;
+    background: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+    border: 1px solid rgb(0, 0, 0);
+    transition: all 0.2s ease-in-out;
+}
+.google-button{
+    width:20vw;
+    letter-spacing: 2px;
     border-radius: 20px;
     padding:10px;
     font-size:17px;
     font-family: 'Cairo', sans-serif;
-}
-.submit-button{
-    width:15vw;
-    border-radius: 20px;
-    padding:10px;
-    font-size:15px;
-    font-family: 'Cairo', sans-serif;
     background: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
     border: 1px solid rgb(0, 0, 0);
-}
-.google-button{
-    width:15vw;
-    border-radius: 20px;
-    padding:10px;
-    font-size:15px;
-    font-family: 'Cairo', sans-serif;
-    background: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-    border: 1px solid rgb(0, 0, 0);
+    transition: all 0.2s ease-in-out;
 }
 .close-popup{
     position: absolute;
     top:0;
     right:0;
-    width:20px;
-    margin-right:20px;
-    height:20px;
+    width:10px;
+    padding:10px;
+    height:10px;
+    border-radius:300px;
     background: rgb(255, 255, 255);
     z-index:10;
     cursor:pointer;
@@ -518,7 +537,7 @@ body{
     height:30vh;
     justify-content:center;
     align-items:center;
-    font-size:5rem;
+    font-size: clamp(40px, 8vw, 80px);
     background:linear-gradient(to right,rgba(6, 255, 226, 0.5),rgba(178, 237, 27, 0.5));
     
 }
@@ -569,6 +588,7 @@ body{
 .slide-leave-to {
  transform: translateY(-50%) translateX(100vw);
 }
+
 </style>
 
 <script>

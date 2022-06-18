@@ -4,12 +4,12 @@ import App from './App.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
-
+import { fab } from '@fortawesome/free-brands-svg-icons'
 // import {initializeApp} from 'firebase/app'
 // import { getFirestore } from "firebase/firestore";
 
 const app = createApp(App)
-library.add(fas)
+library.add(fas, fab)
 // const firebaseConfig = {
 //     apiKey: "AIzaSyDfTT4ihp3HVEaH7dZ0YSijz36PRPFYFGU",
 //     authDomain: "movie-recommendation-7f0c5.firebaseapp.com",
