@@ -13,7 +13,7 @@
             Get started
         </button>
         <div class="content">
-            cant choose from ton of movies ? scratching your bald head ? :D , try this
+           Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis similique nobis fugiat odio perspiciatis error quaerat vitae, est tempore minus quo quod? Veritatis nesciunt maxime quisquam magni, quod eius dolor.
         </div>
     </div>
     <div class="description">
@@ -39,12 +39,13 @@ export default {
 </script>
 <style>
 .title-bg{
-   background:linear-gradient(to right,#ff0000,#fbff00,#660098);
+   /* background:linear-gradient(to right,#ff0000,#fbff00,#660098); */
+   background: white;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-position:left;
     background-size:200%;
-    animation:background-motion 5s ease-in-out infinite alternate;
+   /* animation:background-motion 5s ease-in-out infinite alternate;*/
 }
 .circle-box{
     position: absolute;
@@ -69,7 +70,7 @@ export default {
 
 }
 .get-started{
-    background-color: #da0000;
+    background-color: #000000;
     color: white;
     padding: 10px;
     border-radius: 5px;
@@ -83,7 +84,6 @@ export default {
 }
 .get-started:hover{
     transform:scale(1.1);
-    background-color:red;
 }
 @keyframes background-motion{
     0%{

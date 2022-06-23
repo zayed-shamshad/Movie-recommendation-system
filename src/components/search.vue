@@ -10,6 +10,10 @@
             </button>
         </div>
     </div>
+    <button class="back_button" @click="goback">
+        <font-awesome-icon icon="arrow-left"></font-awesome-icon>
+    </button>
+
 
     <div class="movie-outerbox">
         <div class="image-bg1">
@@ -689,8 +693,6 @@
             ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
 
-
-
         </div>
         <div class="wave" v-if="load">
             <div v-for="i in 30" :key='i' class="wave-inner" :id="i">
@@ -701,11 +703,11 @@
             <poster :title="movies[ind]" :link="links[ind]" :review="overview[ind]">
             </poster>
             <div class="bottom-buttons">
-                <div>
-                    Get more info
-                </div>
+                <button @click="changemovieback">
+                    <font-awesome-icon icon="chevron-left"></font-awesome-icon>
+                </button>
                 <button @click="changemovie">
-                    Next
+                    <font-awesome-icon icon="chevron-right"></font-awesome-icon>
                 </button>
                 <div @click="addtofav" class="heart">❤</div>
             </div>
@@ -757,6 +759,9 @@ export default {
 
     },
     methods:{
+        goback(){
+            this.$router.push('/');
+        },
         closebox(){
             this.load=true;
         },
@@ -779,6 +784,22 @@ export default {
             document.getElementsByClassName('heart')[0].style.color = "red";
             }
             await setDoc(doc(db, "users",  user.email),this.fav);
+
+        },
+        changemovieback(){
+            if (this.ind > 0) {
+                this.ind--;
+            }
+            else {
+                this.ind = this.movies.length - 1;
+            }
+            if (this.movies[this.ind] in this.fav) {
+                document.getElementsByClassName('heart')[0].style.color = "red";
+            }
+            else {
+                document.getElementsByClassName('heart')[0].style.color = "pink";
+            }
+
 
         },
         changemovie(){
@@ -826,9 +847,21 @@ export default {
 }
 </script>
 <style>
+.back_button{
+    top:10px;
+    left:10px;
+    position:absolute;
+    z-index:1;
+    width:50px;
+    height:50px;
+    background-color:transparent;
+    border-radius:10px;
+    padding:10px;
+    color:white;
+    font-size: 1.4rem;
+    cursor:pointer;
 
-
-
+}
 
 
 .image-bg1{
@@ -838,12 +871,13 @@ export default {
     -webkit-text-fill-color: transparent;
     width:400px;
     line-height: 2px;
-height: 60vh;
+    height: 60vh;
     top:5vh;
     position:absolute;
     font-size: 10px;
     font-weight: bold;
-    left:0;
+    left:10px;
+    border-radius: 30px;
 }
 .image-bg2 {
     background: url('src/assets/2001.jpg');
@@ -859,6 +893,7 @@ height: 60vh;
     font-weight: bold;
     left: 50vw;
     transform: translateX(-50%);
+    border-radius:30px;
 }
 .image-bg3{
     background: url('src/assets/blackwidow.jpg');
@@ -872,7 +907,8 @@ height: 60vh;
     position: absolute;
     font-size: 10px;
     font-weight: bold;
-    right: 0;
+    right: 10px;
+    border-radius: 30px;
 }
 .movie-outerbox{
     display:flex;
@@ -885,6 +921,7 @@ height: 60vh;
     top:20vh;
     background-color:rgb(238, 233, 233);
     z-index:-10;
+    
 }
 
 .search-title{
@@ -928,8 +965,9 @@ height: 60vh;
     margin-top: 70px;
 }
 .bottom-buttons button:hover{
-    background-color: red;
+    transform:scale(1.2);
     color:white;
+
 }
 .movie-box{
     display: flex;
@@ -956,6 +994,7 @@ height: 60vh;
     box-shadow: 0px 0px 20px #000;
     border-radius: 10px;
 }
+
 .search-outerbox input{
     width: 400px;
     height: 25px;

@@ -2,7 +2,6 @@
     <div>
         <!-- v-if="state=='LOGOUT'" -->
         <div @click="openprofile" class="openprofile">
-            Profile
         </div>
     </div>
     <div class="profile">
@@ -100,10 +99,16 @@
         </transition>
     </router-view>
 
-    <!-- <div class="footer">
-    </div> -->
+    <div class="footer">
+        <font-awesome-icon :icon="['fab','github']"></font-awesome-icon>
+        <font-awesome-icon :icon="['fab','instagram']"></font-awesome-icon>
+        <font-awesome-icon :icon="['fab','twitter']"></font-awesome-icon>
+        <font-awesome-icon :icon="['fab','linkedin']"></font-awesome-icon>
+        created by zayed 
+    </div>
 </template>
 <style>
+
 
 
 
@@ -158,13 +163,15 @@
 } */
 
 .openprofile{
-    width:60px;
-    height:60px;
+    width:50px;
+    height:50px;
     background-color : rgba(0, 0, 0, 0.2);
-    z-index:100;
+    z-index:1;
+   
+    background-size: cover;
     display:flex;
-    top:20px;
-    right:100px;
+    top:25px;
+    right:150px;
     border-radius:50%;
     position:absolute;
     flex-direction:column;
@@ -446,8 +453,8 @@
 }
 .menu-bg{
     position:absolute;
-    top: -30px;
-    right: -50px;
+    top: -50px;
+    right: -100px;
     width:0;
     height:0;
     border-radius:50%;
@@ -557,17 +564,21 @@ body{
     bottom:0;
     height:5vh;
     width:100vw;
-    background-color:rgba(0,0,0,0.5);
+    background-color:rgb(0,0,0);
     display: flex;
     justify-content: center;
     align-items: center;
     font-family: 'Cairo', sans-serif;
     font-size: 1.2rem;
     color: #ffffff;  
-    position:absolute;
+    position:fixed;
     padding:0;
+    box-shadow: 0px 0px 10px #000;
     margin:0;
     left:0;
+}
+.footer svg{
+    margin:10px;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -619,10 +630,12 @@ mounted(){
             this.username=user.displayName;
             this.avatar=user.photoURL;
             this.email=user.email;
+            document.getElementsByClassName('openprofile')[0].style.backgroundImage="url("+user.photoURL+")";
         }
         else{
             console.log("user is logged out")
             this.state='LOGIN';
+            document.getElementsByClassName('openprofile')[0].style.backgroundImage = "url(src/assets/avatar.png)";
         }
     });
 
@@ -658,6 +671,7 @@ methods:{
             this.avatar = result.user.photoURL;
             this.username = result.user.displayName;
             this.email = result.user.email;
+            document.getElementsByClassName('openprofile')[0].style.backgroundImage = 'url('+this.avatar+')';
         }).catch(function(error) {
             console.log(error);
         });

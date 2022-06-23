@@ -1,4 +1,7 @@
 <template>
+    <button class="back_button" @click="goback">
+        <font-awesome-icon icon="arrow-left"></font-awesome-icon>
+    </button>
     <div v-if="loading" class="loading-fav">
         fetching....
     </div>
@@ -13,7 +16,12 @@
         </div>
     </div>
     <div v-if="empty" class="loading-fav">
-        you have no favourites :(
+        <div class="no-fav-message">
+
+
+            No movies in your favourite list
+        </div>
+
     </div>
 </template>
 <script>
@@ -29,7 +37,8 @@ export default {
             loading:true,
             movies:[],
             fav:{},
-            empty:false
+            empty:false,
+            userc:null,
         }
     },
     watch:{
@@ -40,6 +49,9 @@ export default {
         }
     },
     methods:{
+        goback() {
+            this.$router.push('/');
+        },
       async trash(movie){
             var user = getAuth().currentUser;
             delete this.fav[movie];
@@ -71,11 +83,26 @@ export default {
 
     },
     mounted(){
+        this.userc = getAuth().currentUser;
         this.loaddata();
     },
     }
 </script>
 <style>
+
+.no-fav-message{
+    font-size:1.5rem;
+    text-align:center;
+    color:rgb(0, 0, 0);
+    background-color:white;
+    width:30vw;
+    height:30vh;
+    display:flex;
+    justify-content:center;
+    font-family: 'Roboto', sans-serif;
+    align-items:center;
+    border-radius:10px;
+}
 /* .list-move, */
 /* apply transition to moving elements */
 .list-enter-active,
@@ -136,8 +163,11 @@ export default {
     width:500px;
     flex-direction:row;
     z-index: 0;
-    background-color:rgba(0,0,0,0.5);
-    color:rgb(255, 255, 255);
+    background-color:white;
+    color:rgb(0, 0, 0);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+
     margin:10px;
     
 }
@@ -149,9 +179,10 @@ export default {
     width:85vw;
     flex-direction:column;
     z-index: 0;
-    background-color:rgba(255, 23, 23, 0.5);
+    background-color:rgba(0, 0, 0, 0.5);
    color:white;
    overflow-y:scroll;
+   border-radius:10px;
     
 }
 </style>
