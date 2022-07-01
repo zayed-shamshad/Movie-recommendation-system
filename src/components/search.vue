@@ -912,7 +912,7 @@ export default {
 
 
 .image-bg1{
-    background:url('src/assets/harley.jpg');
+    background:url('/assets/harley.jpg');
     background-size: cover;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -927,7 +927,7 @@ export default {
     border-radius: 30px;
 }
 .image-bg2 {
-    background: url('src/assets/2001.jpg');
+    background: url('/assets/2001.jpg');
     background-size: cover;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -943,7 +943,7 @@ export default {
     border-radius:30px;
 }
 .image-bg3{
-    background: url('src/assets/blackwidow.jpg');
+    background: url('/assets/blackwidow.jpg');
     background-size: cover;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1060,7 +1060,7 @@ export default {
     width: 100vw;
     height: 20vh;
     position:absolute;
-    background:url('src/assets/johnwick.jpg');
+    background:url('/assets/johnwick.jpg');
     background-size: stretch;
     box-shadow: 0px 0px 20px #000;
     border-radius: 10px;

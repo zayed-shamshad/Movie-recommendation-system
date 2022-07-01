@@ -484,7 +484,7 @@
 }
 body{
     font-family: 'Cairo', sans-serif;
-    background: linear-gradient(to right,rgba(71, 202, 231, 0.5),rgba(43, 200, 124, 0.5),rgba(112, 233, 25, 0.5)),url('./assets/mp.jpg');
+    background: linear-gradient(to right,rgba(71, 202, 231, 0.5),rgba(43, 200, 124, 0.5),rgba(112, 233, 25, 0.5)),url('/assets/mp.jpg');
     background-repeat: no-repeat;
     z-index: -1;
     background-size: cover;
@@ -628,7 +628,7 @@ export default{
         email:'email id',
         username:'username',
         state:'LOGIN',
-        avatar:'src/assets/avatar.png',
+        avatar:'/assets/avatar.png',
     }
   }
 ,
@@ -646,7 +646,7 @@ mounted(){
         else{
             console.log("user is logged out")
             this.state='LOGIN';
-            document.getElementsByClassName('openprofile')[0].style.backgroundImage = "url(src/assets/avatar.png)";
+            document.getElementsByClassName('openprofile')[0].style.backgroundImage = "url(/assets/avatar.png)";
         }
     });
 
@@ -671,7 +671,7 @@ methods:{
         signOut(getAuth()).then(()=>{
             this.state='LOGIN';
             this.username='username';
-            this.avatar='src/assets/avatar.png';
+            this.avatar='/assets/avatar.png';
             this.email='email id';
         });
      
