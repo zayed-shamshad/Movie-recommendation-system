@@ -17,8 +17,6 @@
     </div>
     <div v-if="empty" class="loading-fav">
         <div class="no-fav-message">
-
-
             No movies in your favourite list
         </div>
 
@@ -66,16 +64,19 @@ export default {
                     if (docSnap.exists()) {
                         this.fav = docSnap.data();
                         this.movies = Object.values(this.fav);
-
                         this.loading = false;
+
+                       
                     }
                     else {
-                        console.log("mo fav");
+                        console.log("no fav");
+                        this.loading = false;
+                        this.empty = true;
                     }
                     console.log(this.fav);
                 } else {
                     console.log("No user is signed in");
-                    // No user is signed in.
+                    
                 }
             });
 
@@ -180,9 +181,9 @@ export default {
     flex-direction:column;
     z-index: 0;
     background-color:rgba(0, 0, 0, 0.5);
-   color:white;
-   overflow-y:scroll;
-   border-radius:10px;
+    color:white;
+    overflow-y:scroll;
+    border-radius:10px;
     
 }
 </style>

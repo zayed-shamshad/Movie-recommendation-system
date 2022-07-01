@@ -1,3 +1,161 @@
+<script>
+import axios from 'axios'
+import poster from './poster.vue'
+import { db } from '../firebase.js'
+import { doc, setDoc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import { onAuthStateChanged } from 'firebase/auth';
+export default {
+    name: 'search',
+    components: {
+        poster,
+        PulseLoader
+    },
+    data() {
+        return {
+            load:true,
+            movies: [],
+            overview: [],
+            movie: '',
+            links: [],
+            ind: 0,
+            fav: {},
+            initial: true,
+            errornotfound: false,
+        }
+    },
+    mounted() {
+        console.log(this.fav);
+        onAuthStateChanged(getAuth(), async (user) => {
+            if (user) {
+                const docRef = doc(db, "users", user.email);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    this.fav = docSnap.data();
+                }
+                else {
+                    console.log("mo fav");
+                }
+            } else {
+                console.log("No user is signed in");
+            }
+        });
+
+    },
+    methods: {
+        goback() {
+            this.$router.push('/');
+        },
+        closebox() {
+            this.initial = true;
+        },
+        wave() {
+            console.log("i m called");
+            const k = document.getElementsByClassName('wave-inner');
+            for (let i = 0; i < k.length; i++) {
+
+                k[i].style.animation = 'wave 1s ease-in-out infinite';
+                k[i].style.animationDelay = i * 0.05 + 's';
+                k[i].style.backgroundColor = "red";
+                console.log("i ran");
+            }
+            console.log("i ran finished");
+        },
+        async addtofav() {
+            var user = getAuth().currentUser;
+            if (this.movies[this.ind] in this.fav) {
+                document.getElementsByClassName('heart')[0].style.color = "pink";
+                delete this.fav[this.movies[this.ind]];
+            }
+            else {
+                this.fav[this.movies[this.ind]] = this.movies[this.ind];
+                document.getElementsByClassName('heart')[0].style.color = "red";
+            }
+            await setDoc(doc(db, "users", user.email), this.fav);
+
+        },
+        changemovieback() {
+            if (this.ind > 0) {
+                this.ind--;
+            }
+            else {
+                this.ind = this.movies.length - 1;
+            }
+            if (this.movies[this.ind] in this.fav) {
+                document.getElementsByClassName('heart')[0].style.color = "red";
+            }
+            else {
+                document.getElementsByClassName('heart')[0].style.color = "pink";
+            }
+
+
+        },
+        changemovie() {
+            if (this.ind < this.movies.length - 1) {
+                this.ind++;
+            }
+            else {
+                this.ind = 0;
+            }
+            if (this.movies[this.ind] in this.fav) {
+                document.getElementsByClassName('heart')[0].style.color = "red";
+            }
+            else {
+                document.getElementsByClassName('heart')[0].style.color = "pink";
+            }
+        },
+        waitforme(milisec) {
+            return new Promise(resolve => {
+                setTimeout(() => { resolve('') }, milisec);
+            })
+        },
+         makeRequest() {
+            this.initial = false;
+            this.errornotfound = false;
+            this.load = true;
+
+            this.wave();
+            const path = "https://movie-api-backend-a-z.herokuapp.com/"
+            axios.get(path + this.movie)
+                .then(response => {
+                    console.log("the data is " + response.data);
+
+                    this.movies = Object.keys(response.data['1'])
+                    this.overview = Object.values(response.data['2'])
+                    this.links = Object.values(response.data['1'])
+                    document.getElementsByClassName('wave')[0].style.display = "none";
+                    this.errornotfound = false;
+                    this.load = false;
+                    this.initial = false;
+
+
+                })
+                .catch(error => {
+                    document.getElementsByClassName('wave')[0].style.display = "none";
+                    this.errornotfound = true;
+                    this.load = false;
+                    this.initial = false;
+
+                    console.log(error)
+                })
+                .finally(() => (
+                    console.log("finally")
+                ));
+            // setTimeout(() => {
+            //     if (this.movies[this.ind] in this.fav) {
+            //         document.getElementsByClassName('heart')[0].style.color = "yellow";
+            //         delete this.fav[this.movies[this.ind]];
+            //     }
+            //     else {
+            //         this.fav[this.movies[this.ind]] = this.movies[this.ind];
+            //         document.getElementsByClassName('heart')[0].style.color = "blue";
+            //     }
+            // }, 3000);
+        }
+    }
+}
+</script>
 <template>
     <div class="search-outerbox">
         <div class="search-innerbox">
@@ -13,8 +171,6 @@
     <button class="back_button" @click="goback">
         <font-awesome-icon icon="arrow-left"></font-awesome-icon>
     </button>
-
-
     <div class="movie-outerbox">
         <div class="image-bg1">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
@@ -694,159 +850,50 @@
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
 
         </div>
-        <div class="wave" v-if="load">
-            <div v-for="i in 30" :key='i' class="wave-inner" :id="i">
+        <transition name="fade" appear>
+            <div class="initial" v-if="!load && !errornotfound && initial">
+            
             </div>
-        </div>
-        <div class="movie-box" v-else>
-            <font-awesome-icon icon="close" @click="closebox"></font-awesome-icon>
-            <poster :title="movies[ind]" :link="links[ind]" :review="overview[ind]">
-            </poster>
-            <div class="bottom-buttons">
-                <button @click="changemovieback">
-                    <font-awesome-icon icon="chevron-left"></font-awesome-icon>
-                </button>
-                <button @click="changemovie">
-                    <font-awesome-icon icon="chevron-right"></font-awesome-icon>
-                </button>
-                <div @click="addtofav" class="heart">❤</div>
+            <div class="wave" v-else-if="load && !errornotfound && !initial">
+                <!-- <div v-for="i in 30" :key='i' class="wave-inner" :id="i">
+                </div> -->
+                <pulse-loader :loading="load" :color="'red'" :size="'50px'" :margin="'2px'" :speed="'1s'" :trail="'10'" :shadow="'0'" :shadowColor="'#fff'" :shadowSize="'0'" :radius="'10px'"></pulse-loader>
             </div>
-        </div>
+            <div class="movie-box" v-else-if="!errornotfound && !load && !initial">
+                <font-awesome-icon icon="close" @click="closebox"></font-awesome-icon>
+                <transition name="fade" appear>
+                    <poster :title="movies[ind]" :link="links[ind]" :review="overview[ind]">
+                    </poster>
+                </transition>
+                <div class="bottom-buttons">
+                    <button @click="changemovieback">
+                        <font-awesome-icon icon="chevron-left"></font-awesome-icon>
+                    </button>
+                    <button @click="changemovie">
+                        <font-awesome-icon icon="chevron-right"></font-awesome-icon>
+                    </button>
+                    <div @click="addtofav" class="heart">❤</div>
+                </div>
+            </div>
+            <div v-else-if="errornotfound && !load && !initial" class="error">
+                <font-awesome-icon icon="exclamation-triangle" class="erroricon"></font-awesome-icon>
+                <p>Error</p>
+            </div>
+        </transition>
 
     </div>
 </template>
-<script>
-import axios from 'axios'
-import poster from './poster.vue'
-import {db} from '../firebase.js'
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import { onAuthStateChanged} from 'firebase/auth';
-export default {
-    name: 'search',
-    components: {
-        poster
-    },
-    data(){
-        return{
-            load:true,
-            movies:[],
-            overview:[],
-            movie:'eg: batman...',
-            links:[],
-            ind:0,
-            fav:{}
-        }
-    },
-    mounted(){
-        this.wave();
-        console.log(this.fav);
-        onAuthStateChanged(getAuth(), async (user) => {
-            if (user) {
-                const docRef = doc(db, "users", user.email);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    this.fav=docSnap.data();
-                }
-                else{
-                    console.log("mo fav");
-                }
-                console.log(this.fav);
-            } else {
-                console.log("No user is signed in");
-            }
-       });
 
-    },
-    methods:{
-        goback(){
-            this.$router.push('/');
-        },
-        closebox(){
-            this.load=true;
-        },
-        wave(){
-          const k = document.getElementsByClassName('wave-inner');
-          for (let i = 0; i < k.length; i++) {
-              k[i].style.animation = 'wave 1s ease-in-out infinite';
-              k[i].style.animationDelay = i * 0.05 + 's';
-              k[i].style.backgroundColor = "red";
-          }
-            },
-        async addtofav(){
-            var user = getAuth().currentUser;
-            if (this.movies[this.ind] in this.fav){
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-                delete this.fav[this.movies[this.ind]];
-            }
-            else{
-            this.fav[this.movies[this.ind]] = this.movies[this.ind];
-            document.getElementsByClassName('heart')[0].style.color = "red";
-            }
-            await setDoc(doc(db, "users",  user.email),this.fav);
-
-        },
-        changemovieback(){
-            if (this.ind > 0) {
-                this.ind--;
-            }
-            else {
-                this.ind = this.movies.length - 1;
-            }
-            if (this.movies[this.ind] in this.fav) {
-                document.getElementsByClassName('heart')[0].style.color = "red";
-            }
-            else {
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-            }
-
-
-        },
-        changemovie(){
-            if(this.ind<this.movies.length-1){
-                this.ind++;
-            }
-            else{
-                this.ind=0; }
-            if (this.movies[this.ind] in this.fav) {
-                document.getElementsByClassName('heart')[0].style.color = "red";
-            }
-            else{
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-            }
-        },
-        makeRequest(){
-            const path = "https://movie-api-backend-a-z.herokuapp.com/"
-            document.getElementsByClassName('wave')[0].style.display="flex";
-            this.wave();
-            axios.get(path + this.movie)
-                .then(response => {
-                    this.movies = Object.keys(response.data['1'])
-                    this.overview = Object.values(response.data['2'])
-                    this.links= Object.values(response.data['1'])
-                }) 
-                .catch(error => {
-                    console.log(error)
-                }) 
-                .finally(() => (
-                    document.getElementsByClassName('wave')[0].style.display = "none",
-                    this.load=false
-                ));
-                // setTimeout(() => {
-                //     if (this.movies[this.ind] in this.fav) {
-                //         document.getElementsByClassName('heart')[0].style.color = "yellow";
-                //         delete this.fav[this.movies[this.ind]];
-                //     }
-                //     else {
-                //         this.fav[this.movies[this.ind]] = this.movies[this.ind];
-                //         document.getElementsByClassName('heart')[0].style.color = "blue";
-                //     }
-                // }, 3000);
-        }
-    }
-}
-</script>
 <style>
+
+
+
+
+
+
+
+
+
 .back_button{
     top:10px;
     left:10px;
@@ -919,7 +966,7 @@ export default {
     height:80vh;
     width:100vw;
     top:20vh;
-    background-color:rgb(238, 233, 233);
+    background:linear-gradient(to right,rgb(255, 0, 0) , rgb(255, 255, 255), rgb(255, 0, 0));
     z-index:-10;
     
 }
@@ -969,13 +1016,37 @@ export default {
     color:white;
 
 }
+.erroricon{
+    font-size: 5em;
+    color:red;
+    margin-top: 10px;
+}
+.error{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 300px;
+    width: 300px;
+    background-color: rgb(31, 20, 17);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 10px;
+    margin-top: 10vh;
+    padding: 10px;
+     z-index: 100;
+     box-shadow: 0px 0px 10px rgb(0, 0, 0, 0.5);
+
+}
 .movie-box{
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    background:linear-gradient(to right, #000000, rgb(228, 70, 17));
+    background:linear-gradient(to right,rgb(0, 0, 0) , rgb(255, 0, 0));
+    box-shadow: 0px 0px 10px rgb(0,0,0,0.5);
     border-radius: 10px;
     box-shadow: 0px 0px 10px #000;
     padding: 10px;
@@ -1016,7 +1087,7 @@ export default {
     font-size: 20px;
     color: rgb(255, 255, 255);
     cursor:pointer;
-    z-index:10000;
+    z-index:0;
     margin:10px;
     transition: all 0.2s ease-in-out;
 }
@@ -1036,21 +1107,34 @@ export default {
     padding: 10px;
     top:0;
 }
+.initial{
+    background-color: transparent;
+    width: 100vw;
+    height: 80vh;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
 .wave {
     background-color: transparent;
     width: 100vw;
     height: 80vh;
     position: absolute;
-    display: none;
+    display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    z-index: 100;
 }
 
 .wave-inner {
     width: 10px;
     height: 15vh;
     margin: 5px;
+    z-index: 100;
 }
 
 @keyframes wave {

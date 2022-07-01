@@ -104,7 +104,7 @@
         <font-awesome-icon :icon="['fab','instagram']"></font-awesome-icon>
         <font-awesome-icon :icon="['fab','twitter']"></font-awesome-icon>
         <font-awesome-icon :icon="['fab','linkedin']"></font-awesome-icon>
-        created by zayed 
+        created by zayed
     </div>
 </template>
 <style>
@@ -114,8 +114,19 @@
 
 
 
+
 @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+/* we will explain what these classes do next! */
+.v-enter-active,
+.v-leave-active {
+    transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+    opacity: 0;
+}
 .username{
         cursor: pointer;
         transition: all 0.3s ease-in-out;
