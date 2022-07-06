@@ -21,14 +21,17 @@ export default {
             links: [],
             ind: 0,
             fav: {},
+            color: "white",
             initial: true,
             errornotfound: false,
+            userLoggedin:false,
         }
     },
     mounted() {
         console.log(this.fav);
         onAuthStateChanged(getAuth(), async (user) => {
             if (user) {
+                this.userLoggedin = true;
                 const docRef = doc(db, "users", user.email);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
@@ -38,10 +41,14 @@ export default {
                     console.log("mo fav");
                 }
             } else {
+                this.userLoggedin = false;
                 console.log("No user is signed in");
             }
         });
 
+    },
+    watch:{
+       
     },
     methods: {
         goback() {
@@ -75,6 +82,16 @@ export default {
             await setDoc(doc(db, "users", user.email), this.fav);
 
         },
+        currentcolorindex() {
+            if (this.movies[this.ind] in this.fav) {
+                document.getElementsByClassName('heart')[0].style.color = "red";
+                this.color="red";
+            }
+            else {
+                document.getElementsByClassName('heart')[0].style.color = "pink";
+                this.color="pink";
+            }
+        },
         changemovieback() {
             if (this.ind > 0) {
                 this.ind--;
@@ -84,9 +101,11 @@ export default {
             }
             if (this.movies[this.ind] in this.fav) {
                 document.getElementsByClassName('heart')[0].style.color = "red";
+                this.color="red";
             }
             else {
                 document.getElementsByClassName('heart')[0].style.color = "pink";
+                this.color="pink";
             }
 
 
@@ -100,9 +119,11 @@ export default {
             }
             if (this.movies[this.ind] in this.fav) {
                 document.getElementsByClassName('heart')[0].style.color = "red";
+                this.color = "red";
             }
             else {
                 document.getElementsByClassName('heart')[0].style.color = "pink";
+                this.color = "pink";
             }
         },
         waitforme(milisec) {
@@ -119,8 +140,6 @@ export default {
             const path = "https://movie-api-backend-a-z.herokuapp.com/"
             axios.get(path + this.movie)
                 .then(response => {
-                    console.log("the data is " + response.data);
-
                     this.movies = Object.keys(response.data['1'])
                     this.overview = Object.values(response.data['2'])
                     this.links = Object.values(response.data['1'])
@@ -128,8 +147,12 @@ export default {
                     this.errornotfound = false;
                     this.load = false;
                     this.initial = false;
-
-
+                    if(this.movies[0] in this.fav){
+                        this.color="red";
+                    }
+                    else{
+                        this.color="pink";
+                    }
                 })
                 .catch(error => {
                     document.getElementsByClassName('wave')[0].style.display = "none";
@@ -852,12 +875,13 @@ export default {
         </div>
         <transition name="fade" appear>
             <div class="initial" v-if="!load && !errornotfound && initial">
-            
+
             </div>
             <div class="wave" v-else-if="load && !errornotfound && !initial">
                 <!-- <div v-for="i in 30" :key='i' class="wave-inner" :id="i">
                 </div> -->
-                <pulse-loader :loading="load" :color="'red'" :size="'50px'" :margin="'2px'" :speed="'1s'" :trail="'10'" :shadow="'0'" :shadowColor="'#fff'" :shadowSize="'0'" :radius="'10px'"></pulse-loader>
+                <pulse-loader :loading="load" :color="'red'" :size="'50px'" :margin="'2px'" :speed="'1s'" :trail="'10'"
+                    :shadow="'0'" :shadowColor="'#fff'" :shadowSize="'0'" :radius="'10px'"></pulse-loader>
             </div>
             <div class="movie-box" v-else-if="!errornotfound && !load && !initial">
                 <font-awesome-icon icon="close" @click="closebox"></font-awesome-icon>
@@ -872,7 +896,7 @@ export default {
                     <button @click="changemovie">
                         <font-awesome-icon icon="chevron-right"></font-awesome-icon>
                     </button>
-                    <div @click="addtofav" class="heart">❤</div>
+                    <div @click="addtofav" class="heart" v-bind:style="{color: color}" v-if="userLoggedin">❤</div>
                 </div>
             </div>
             <div v-else-if="errornotfound && !load && !initial" class="error">

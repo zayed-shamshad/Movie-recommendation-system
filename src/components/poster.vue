@@ -66,11 +66,9 @@ flex-direction: column;
 align-content: center;
 align-items: center;
 }
-
 #poster-box img{
     border-radius: 25px;
 }
-
 .modal-overlay {
 z-index: 100000;
  position: fixed;
@@ -80,7 +78,6 @@ z-index: 100000;
  bottom: 0;
  background-color: rgba(0, 0, 0, 0.3);
 }
-
 .modal {
     z-index: 10000000;
     position: fixed;
@@ -104,6 +101,17 @@ z-index: 100000;
   font-size: 18px;
   font-weight: 400;
   margin-bottom: 15px;
+ }
+ .but{
+    background-color: #222;
+    color: #FFF;
+    border: none;
+    padding: 10px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    margin-top: 15px;
  }
  
 </style>

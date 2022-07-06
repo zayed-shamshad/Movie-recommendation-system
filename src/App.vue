@@ -1,7 +1,8 @@
 <template>
     <div>
         <!-- v-if="state=='LOGOUT'" -->
-        <div @click="openprofile" class="openprofile">
+        <div>
+            <img :src="avatar" @click="openprofile" class="openprofile">
         </div>
     </div>
     <div class="profile">
@@ -641,12 +642,13 @@ mounted(){
             this.username=user.displayName;
             this.avatar=user.photoURL;
             this.email=user.email;
-            document.getElementsByClassName('openprofile')[0].style.backgroundImage="url("+user.photoURL+")";
+           // document.getElementsByClassName('openprofile')[0].style.backgroundImage="url("+user.photoURL+")";
         }
         else{
             console.log("user is logged out")
             this.state='LOGIN';
-            document.getElementsByClassName('openprofile')[0].style.backgroundImage = "url(/assets/avatar.png)";
+            this.avatar='/assets/avatar.png';
+            //document.getElementsByClassName('openprofile')[0].style.backgroundImage = "url(/assets/avatar.png)";
         }
     });
 
