@@ -3,9 +3,23 @@ import { getAuth } from 'firebase/auth';
 import search from '../components/search.vue';
 import home from '../components/home.vue';
 import fav from '../components/fav.vue';
+import movies from '../components/movies.vue';
+import about from '../components/about.vue';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/movies',
+      name: 'Movies',
+      component: movies
+
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: about
+
+    },
     {
       path: '/search',
       name: 'search',

@@ -13,10 +13,11 @@
             Get started
         </button>
         <div class="content">
-           Lorem ipsum dolor sit amet consectetur adipisicing elit. Officiis similique nobis fugiat odio perspiciatis error quaerat vitae, est tempore minus quo quod? Veritatis nesciunt maxime quisquam magni, quod eius dolor.
+           With this Movie Recommendation Engine you can find the best movies for you and your friends to watch in no time.
+
         </div>
     </div>
-    <div class="description">
+    <!-- <div class="description">
         <div class="cards" v-for="card in cards" :key="card">
             <div class="card-title">
                 {{card.title}}
@@ -25,14 +26,14 @@
                 {{card.content}}
             </div>
         </div>
-    </div>
+    </div> -->
 </template>
 <script>
 export default {
     name: 'home',
     data(){
         return{
-            cards: [{ title: "2000+ Movies", content: "we offer more than 2000 movies" }, { title: "AI based", content: "lorem ipsum" }, { title: "100%Free", content: "lorem ipsum" }]
+            cards: [{ title: "2000+ Movies", content: "More than 2000 movies to choose from" }, { title: "AI based", content: "Latest " }, { title: "", content: "lorem ipsum" }]
         }
     }
 }

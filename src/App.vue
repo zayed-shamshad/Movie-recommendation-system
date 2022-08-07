@@ -36,14 +36,14 @@
         </div>
         SIGN IN
 
-        <input type="email" v-model="email" placeholder="email">
+        <!-- <input type="email" v-model="email" placeholder="email">
 
         <input type="password" v-model="password" placeholder="Password">
 
         <button @click="submit" class="submit-button">
             <font-awesome-icon icon="sign-in" class="icons"></font-awesome-icon>
             Login
-        </button>
+        </button> -->
         <button class="google-button" @click="googlesignup">
             <font-awesome-icon :icon='["fab","google"]' class="icons"></font-awesome-icon>
             signup with google
@@ -78,13 +78,10 @@
                 <router-link to="/" @click="toggle">HOME</router-link>
             </li>
             <li>
-                <router-link to="/movies">MOVIES</router-link>
+                <router-link to="/movies" @click="toggle">MOVIES</router-link>
             </li>
             <li>
-                <router-link to="/blog">BlOGS</router-link>
-            </li>
-            <li>
-                <router-link to="/about">ABOUT US</router-link>
+                <router-link to="/about" @click="toggle">ABOUT US</router-link>
 
             </li>
             <!-- <li @click="login">
@@ -101,10 +98,19 @@
     </router-view>
 
     <div class="footer">
-        <font-awesome-icon :icon="['fab','github']"></font-awesome-icon>
-        <font-awesome-icon :icon="['fab','instagram']"></font-awesome-icon>
-        <font-awesome-icon :icon="['fab','twitter']"></font-awesome-icon>
-        <font-awesome-icon :icon="['fab','linkedin']"></font-awesome-icon>
+        <a class="footerlink" href="https://github.com/zayed-shamshad">
+            <font-awesome-icon :icon="['fab','github']">
+            </font-awesome-icon>
+        </a>
+        <a class="footerlink" href="https://instagram.com/zaid_shamshad">
+            <font-awesome-icon :icon="['fab','instagram']"></font-awesome-icon>
+        </a>
+        <a class="footerlink" href="https://twitter.com/Zaidshamshad2">
+            <font-awesome-icon :icon="['fab','twitter']"></font-awesome-icon>
+        </a>
+        <a class="footerlink" href="https://www.linkedin.com/in/mohammad-zaid-shamshad-611546203/">
+            <font-awesome-icon :icon="['fab','linkedin']"></font-awesome-icon>
+        </a>
         created by zayed
     </div>
 </template>
@@ -118,6 +124,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+.footerlink{
+    color:white;
+    text-decoration:none;
+}
 /* we will explain what these classes do next! */
 .v-enter-active,
 .v-leave-active {
@@ -283,8 +293,8 @@
     width:30vw;
     position: absolute;
     z-index:20;
-    height:60vh;
-    top:20vh;
+    height:30vh;
+    top:30vh;
     left:35vw;
     background: rgb(255, 255, 255);
     display: flex;
@@ -629,7 +639,7 @@ export default{
         email:'email id',
         username:'username',
         state:'LOGIN',
-        avatar:'/assets/avatar.png',
+        avatar:'./assets/avatar.png',
     }
   }
 ,
@@ -647,7 +657,7 @@ mounted(){
         else{
             console.log("user is logged out")
             this.state='LOGIN';
-            this.avatar='/assets/avatar.png';
+            this.avatar='./assets/avatar.png';
             //document.getElementsByClassName('openprofile')[0].style.backgroundImage = "url(/assets/avatar.png)";
         }
     });
@@ -673,7 +683,7 @@ methods:{
         signOut(getAuth()).then(()=>{
             this.state='LOGIN';
             this.username='username';
-            this.avatar='/assets/avatar.png';
+            this.avatar='./assets/avatar.png';
             this.email='email id';
         });
      
@@ -684,7 +694,8 @@ methods:{
             this.avatar = result.user.photoURL;
             this.username = result.user.displayName;
             this.email = result.user.email;
-            document.getElementsByClassName('openprofile')[0].style.backgroundImage = 'url('+this.avatar+')';
+           // document.getElementsByClassName('openprofile')[0].style.backgroundImage = 'url('+this.avatar+')';
+
         }).catch(function(error) {
             console.log(error);
         });
