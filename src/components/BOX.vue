@@ -1,6 +1,5 @@
 <template>
- <div id="outside-box">
-     this is a box
+<div id="outside-box">
  </div>
 </template>
 <script >
