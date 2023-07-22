@@ -1,9 +1,4 @@
 <template>
-    <!-- <div class="circle-box">
-        <div class="bg-circle">
-
-        </div>
-    </div> -->
     <div class="intro">
         <div class="title">
             <div class="title-bg">Movie Recommendation Engine</div>
@@ -14,28 +9,12 @@
         </button>
         <div class="content">
            With this Movie Recommendation Engine you can find the best movies for you and your friends to watch in no time.
-
         </div>
     </div>
-    <!-- <div class="description">
-        <div class="cards" v-for="card in cards" :key="card">
-            <div class="card-title">
-                {{card.title}}
-            </div>
-            <div class="card-content">
-                {{card.content}}
-            </div>
-        </div>
-    </div> -->
 </template>
 <script>
 export default {
     name: 'home',
-    data(){
-        return{
-            cards: [{ title: "2000+ Movies", content: "More than 2000 movies to choose from" }, { title: "AI based", content: "Latest " }, { title: "", content: "lorem ipsum" }]
-        }
-    }
 }
 </script>
 <style>

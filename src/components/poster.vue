@@ -1,13 +1,11 @@
 <template>
 <div id="poster-box" data-tilt data-tilt-reverse="true" @click="showModall">
     <div> <h4>{{title.toUpperCase()}}</h4></div>
-    
     <img class="img-responsive" v-bind:src= "link">
     <Teleport to="body">
     <transition name="fade" appear>
     <div class="modal-overlay" v-if="showModal" @click="showModall=false"></div>
     </transition>
-
    <transition name="slide" appear>
     <div v-if="showModal" class="modal">
     <h1>{{title}}</h1>
@@ -51,7 +49,6 @@ mounted() {
 }
 </script>
 <style>
-
 .img-responsive{
     width:250px;
 }

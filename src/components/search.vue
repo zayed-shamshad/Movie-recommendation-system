@@ -1,190 +1,6 @@
-<script>
-import axios from 'axios'
-import poster from './poster.vue'
-import { db } from '../firebase.js'
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
-import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
-import { onAuthStateChanged } from 'firebase/auth';
-export default {
-    name: 'search',
-    components: {
-        poster,
-        PulseLoader
-    },
-    data() {
-        return {
-            load:true,
-            movies: [],
-            overview: [],
-            movie: '',
-            links: [],
-            ind: 0,
-            fav: {},
-            color: "white",
-            initial: true,
-            errornotfound: false,
-            userLoggedin:false,
-        }
-    },
-    mounted() {
-        console.log(this.fav);
-        onAuthStateChanged(getAuth(), async (user) => {
-            if (user) {
-                this.userLoggedin = true;
-                const docRef = doc(db, "users", user.email);
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    this.fav = docSnap.data();
-                }
-                else {
-                    console.log("mo fav");
-                }
-            } else {
-                this.userLoggedin = false;
-                console.log("No user is signed in");
-            }
-        });
-
-    },
-    watch:{
-       
-    },
-    methods: {
-        goback() {
-            this.$router.push('/');
-        },
-        closebox() {
-            this.initial = true;
-        },
-        wave() {
-            console.log("i m called");
-            const k = document.getElementsByClassName('wave-inner');
-            for (let i = 0; i < k.length; i++) {
-
-                k[i].style.animation = 'wave 1s ease-in-out infinite';
-                k[i].style.animationDelay = i * 0.05 + 's';
-                k[i].style.backgroundColor = "red";
-                console.log("i ran");
-            }
-            console.log("i ran finished");
-        },
-        async addtofav() {
-            var user = getAuth().currentUser;
-            if (this.movies[this.ind] in this.fav) {
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-                delete this.fav[this.movies[this.ind]];
-            }
-            else {
-                this.fav[this.movies[this.ind]] = this.movies[this.ind];
-                document.getElementsByClassName('heart')[0].style.color = "red";
-            }
-            await setDoc(doc(db, "users", user.email), this.fav);
-
-        },
-        currentcolorindex() {
-            if (this.movies[this.ind] in this.fav) {
-                document.getElementsByClassName('heart')[0].style.color = "red";
-                this.color="red";
-            }
-            else {
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-                this.color="pink";
-            }
-        },
-        changemovieback() {
-            if (this.ind > 0) {
-                this.ind--;
-            }
-            else {
-                this.ind = this.movies.length - 1;
-            }
-            if (this.movies[this.ind] in this.fav) {
-                document.getElementsByClassName('heart')[0].style.color = "red";
-                this.color="red";
-            }
-            else {
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-                this.color="pink";
-            }
-
-
-        },
-        changemovie() {
-            if (this.ind < this.movies.length - 1) {
-                this.ind++;
-            }
-            else {
-                this.ind = 0;
-            }
-            if (this.movies[this.ind] in this.fav) {
-                document.getElementsByClassName('heart')[0].style.color = "red";
-                this.color = "red";
-            }
-            else {
-                document.getElementsByClassName('heart')[0].style.color = "pink";
-                this.color = "pink";
-            }
-        },
-        waitforme(milisec) {
-            return new Promise(resolve => {
-                setTimeout(() => { resolve('') }, milisec);
-            })
-        },
-         makeRequest() {
-            this.initial = false;
-            this.errornotfound = false;
-            this.load = true;
-
-            this.wave();
-            const path = "https://movie-api-backend-a-z.herokuapp.com/"
-            axios.get(path + this.movie)
-                .then(response => {
-                    this.movies = Object.keys(response.data['1'])
-                    this.overview = Object.values(response.data['2'])
-                    this.links = Object.values(response.data['1'])
-                    document.getElementsByClassName('wave')[0].style.display = "none";
-                    this.errornotfound = false;
-                    this.load = false;
-                    this.initial = false;
-                    if(this.movies[0] in this.fav){
-                        this.color="red";
-                    }
-                    else{
-                        this.color="pink";
-                    }
-                })
-                .catch(error => {
-                    document.getElementsByClassName('wave')[0].style.display = "none";
-                    this.errornotfound = true;
-                    this.load = false;
-                    this.initial = false;
-
-                    console.log(error)
-                })
-                .finally(() => (
-                    console.log("finally")
-                ));
-            // setTimeout(() => {
-            //     if (this.movies[this.ind] in this.fav) {
-            //         document.getElementsByClassName('heart')[0].style.color = "yellow";
-            //         delete this.fav[this.movies[this.ind]];
-            //     }
-            //     else {
-            //         this.fav[this.movies[this.ind]] = this.movies[this.ind];
-            //         document.getElementsByClassName('heart')[0].style.color = "blue";
-            //     }
-            // }, 3000);
-        }
-    }
-}
-</script>
 <template>
     <div class="search-outerbox">
         <div class="search-innerbox">
-            <!-- <div class="search-title">
-                Type in the name of the movie
-            </div> -->
             <input type="text" v-model="movie" placeholder="Enter the movie name...">
             <button @click="makeRequest" class="search-movie">
                 Search
@@ -196,699 +12,23 @@ export default {
     </button>
     <div class="movie-outerbox">
         <div class="image-bg1">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-
-
-
         </div>
         <div class="image-bg2">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-
-
-
         </div>
         <div class="image-bg3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            s sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-            nam sed fuga incidunt dicta amet eos pariatur corporis iste voluptas cum et! Iste. Lorem ipsum dolor, sit
-            amet consectetur adipisicing elit. Alias unde maiores eos vitae nemo, iusto sapiente exercitationem dolore
-            ipsum cum vero expedita cumque neque aut repellendus cupiditate nesciunt culpa facere.
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam impedit rem eos sunt, laborum ipsum iste
-            vitae saepe error esse earum sed suscipit neque amet, tenetur hic. Ex, in maxime. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Dolorem quidem rerum perspiciatis. Iste pariatur qui cumque, facilis
-            ducimus iusto, eius culpa, possimus quasi a impedit? Incidunt, quidem. Molestias, dolor error!
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto ad, dolore nostrum qui harum ea officia,
-
         </div>
         <transition name="fade" appear>
             <div class="initial" v-if="!load && !errornotfound && initial">
 
             </div>
             <div class="wave" v-else-if="load && !errornotfound && !initial">
-                <!-- <div v-for="i in 30" :key='i' class="wave-inner" :id="i">
-                </div> -->
                 <pulse-loader :loading="load" :color="'red'" :size="'50px'" :margin="'2px'" :speed="'1s'" :trail="'10'"
                     :shadow="'0'" :shadowColor="'#fff'" :shadowSize="'0'" :radius="'10px'"></pulse-loader>
             </div>
             <div class="movie-box" v-else-if="!errornotfound && !load && !initial">
                 <font-awesome-icon icon="close" @click="closebox"></font-awesome-icon>
-                <transition name="fade" appear>
-                    <poster :title="movies[ind]" :link="links[ind]" :review="overview[ind]">
-                    </poster>
-                </transition>
+                <movie-card :id="movies[ind].id" :title="movies[ind].title" :overview="movies[ind].overview" :links="movies[ind].poster_path">
+                </movie-card>
                 <div class="bottom-buttons">
                     <button @click="changemovieback">
                         <font-awesome-icon icon="chevron-left"></font-awesome-icon>
@@ -896,7 +36,6 @@ export default {
                     <button @click="changemovie">
                         <font-awesome-icon icon="chevron-right"></font-awesome-icon>
                     </button>
-                    <div @click="addtofav" class="heart" v-bind:style="{color: color}" v-if="userLoggedin">❤</div>
                 </div>
             </div>
             <div v-else-if="errornotfound && !load && !initial" class="error">
@@ -906,18 +45,84 @@ export default {
         </transition>
 
     </div>
-</template>
+</template> 
 
-<style>
+<script>
+import axios from 'axios'
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import movieCard from './movie-card.vue'
+export default {
+    name: 'search',
+    components: {
+        PulseLoader
+        , movieCard
+    },
+    data() {
+        return {
+            load:true,
+            movies: [],
+            movie: '',
+            ind: 0,
+            initial: true,
+            errornotfound: false,
+        }
+    },
+    methods: {
+        goback() {
+            this.$router.push('/');
+        },
+        closebox() {
+            this.initial = true;
+        },
+        changemovieback() {
+            if (this.ind > 0) {
+                this.ind--;
+            }
+            else {
+                this.ind = this.movies.length - 1;
+            }
+        },
+        changemovie() {
+            if (this.ind < this.movies.length - 1) {
+                this.ind++;
+            }
+            else {
+                this.ind = 0;
+            }
+        },
+        async makeRequest() {
+            this.initial = false;
+            this.errornotfound = false;
+            this.load = true;
+            const path = "http://127.0.0.1:5000/movie?s="+this.movie;
+            console.log(this.movie);
+            try{
+                const response =await axios.get(path)
+                this.movies=response.data;
+                console.log(this.movies);
+                if(this.movies.length==0){
+                    this.errornotfound = true;
+                    this.load = false;
+                    this.initial = false;
+                    return;
+                }
+                this.errornotfound = false;
+                this.load = false;
+                this.initial = false;
+                this.ind=0;
+            }
+            catch(error){
+                    this.errornotfound = true;
+                    this.load = false;
+                    this.initial = false;
+                    console.log(error)
+                }
+        }
+    }
+}
+</script>
 
-
-
-
-
-
-
-
-
+ <style>
 .back_button{
     top:10px;
     left:10px;
@@ -933,19 +138,17 @@ export default {
     cursor:pointer;
 
 }
-
-
 .image-bg1{
     background:url('/assets/harley.jpg');
     background-size: cover;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; */
     width:400px;
-    line-height: 2px;
+    line-height: 10px;
     height: 60vh;
     top:5vh;
     position:absolute;
-    font-size: 10px;
+    font-size: 5px;
     font-weight: bold;
     left:10px;
     border-radius: 30px;
@@ -953,10 +156,10 @@ export default {
 .image-bg2 {
     background: url('/assets/2001.jpg');
     background-size: cover;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* -webkit-background-clip: text; */
+    /* -webkit-text-fill-color: transparent; */
     width: 400px;
-    line-height: 2px;
+    line-height: 5px;
     height: 60vh;
     top: 5vh;
     position: absolute;
@@ -969,10 +172,10 @@ export default {
 .image-bg3{
     background: url('/assets/blackwidow.jpg');
     background-size: cover;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; */
     width: 400px;
-    line-height: 2px;
+    line-height: 5px;
     height: 60vh;
     top: 5vh;
     position: absolute;
@@ -1068,7 +271,7 @@ export default {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    margin: 0 auto;
+    margin: 10px;
     background:linear-gradient(to right,rgb(0, 0, 0) , rgb(255, 0, 0));
     box-shadow: 0px 0px 10px rgb(0,0,0,0.5);
     border-radius: 10px;
@@ -1195,4 +398,4 @@ export default {
 }
 
 
-</style>
+</style> 

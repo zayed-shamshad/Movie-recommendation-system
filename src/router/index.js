@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getAuth } from 'firebase/auth';
 import search from '../components/search.vue';
 import home from '../components/home.vue';
 import fav from '../components/fav.vue';
 import movies from '../components/movies.vue';
 import about from '../components/about.vue';
+import { useUserStore } from '../stores/store';
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -30,7 +30,8 @@ const router = createRouter({
       name: 'fav',
       component: fav,
       beforeEnter: (to, from, next) => {
-        getAuth().onAuthStateChanged(user => {
+        const store=useUserStore();
+        const user = store.getUser;
           if (user) {
             next();
           }
@@ -38,9 +39,6 @@ const router = createRouter({
             next('/');
           }
         }
-        );
-      }
-
     },
     {
       path: '/',
@@ -48,10 +46,6 @@ const router = createRouter({
       component: home,
     },
     { path: '/:pathMatch(.*)*', name: 'not-found', component: home },
-
-   
-    
-
   ]
 })
 

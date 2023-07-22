@@ -1,7 +1,7 @@
 <template>
     <div class="aboutcard">
         Hey !! ,I'm Mohammad Zaid, a tech enthusiast and a web developer,an undergrad at IIT Jodhpur.
-        checkout my<a class="portfoliolink" href="https://zayed-shamshad.github.io/portfolio-zs/#/#home" target="blank">Portfolio</a>
+        checkout my<a class="portfoliolink" href="https://zayed-shamshad.github.io/profile" target="blank">Portfolio</a>
     </div>
 </template>
 <script>

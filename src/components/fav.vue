@@ -8,10 +8,21 @@
     <div v-if="!loading && !empty" class="loading-movies">
         <div class="outer-card">
             <transition-group name="list">
-                <div v-for="movie in movies" :key="movie" class="movie-cards">
-                    {{movie}}
-                    <font-awesome-icon icon="trash" class="trash" @click="trash(movie)"></font-awesome-icon>
-                </div>
+                <div v-for="movie in movies" :key="movie.id" class="movie-cards">
+      <div class="movie-card-poster">
+        <img class="img-responsive" :src="link + movie.poster_path" alt="Movie Poster">
+      </div>
+      <div>
+        <div><h2>{{ movie.title.toUpperCase() }}</h2></div>
+        <p><strong>Overview:</strong> {{ movie.overview }}</p>
+        <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+        <p><strong>Genres:</strong> {{ movie.genres.map(genre => genre.name).join(', ') }}</p>
+        <p><strong>Runtime:</strong> {{ movie.runtime }} minutes</p>
+        <p><strong>Tagline:</strong> {{ movie.tagline }}</p>
+        <p><strong>Vote Average:</strong> {{ movie.vote_average }}</p>
+         <font-awesome-icon icon="trash" class="trash" @click="trash(movie.id)"></font-awesome-icon>
+      </div>
+    </div>
             </transition-group>
         </div>
     </div>
@@ -23,26 +34,35 @@
     </div>
 </template>
 <script>
-import { getAuth} from 'firebase/auth';
-import { onAuthStateChanged} from 'firebase/auth';
 import { doc,getDoc } from "firebase/firestore";
 import { db } from '../firebase.js'
 import { setDoc} from "firebase/firestore";
+import { useUserStore } from "../stores/store";
+import axios from "axios";
+import poster from "./poster.vue";
 export default {
     name: 'fav',
+    components:{
+        poster
+    },
     data(){
         return{
             loading:true,
+            link:"https://image.tmdb.org/t/p/w500",
+            fav:[],
             movies:[],
-            fav:{},
             empty:false,
-            userc:null,
+            user:null,
+            userstore:useUserStore()
         }
     },
     watch:{
         movies(){
             if(this.movies.length==0){
-                this.empty=true
+                this.empty=true;
+            }
+            else{
+                this.empty=false;
             }
         }
     },
@@ -51,40 +71,49 @@ export default {
             this.$router.push('/');
         },
       async trash(movie){
-            var user = getAuth().currentUser;
-            delete this.fav[movie];
-            await setDoc(doc(db, "users", user.email), this.fav);
-            this.loaddata();
+            this.fav=this.fav.filter((m)=>{
+                return m!=movie;
+            })
+            this.movies=this.movies.filter((m)=>{
+                return m.id!=movie;
+            })
+            await setDoc(doc(db, "users", this.user.email)
+            , {
+                fav:this.fav
+            }
+            );
         },
-        loaddata(){
-            onAuthStateChanged(getAuth(), async (user) => {
-                if (user) {
-                    const docRef = doc(db, "users", user.email);
+       async loaddata(){
+             this.user=this.userstore.getUser;
+                if (this.user) {
+                    const docRef = doc(db, "users", this.user.email);
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
-                        this.fav = docSnap.data();
-                        this.movies = Object.values(this.fav);
+                        this.fav = docSnap.data().fav;
+                        const options = {
+                        method: 'GET',
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZDYzMzQ1MzIxMTQwNDhmN2VlYTA3OGVkMTBlM2EwOSIsInN1YiI6IjYyNmFmOGFlOWI2ZTQ3MDBhNDVhODAyNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MIBeEiA5qadK-dRQi1FYcNiZ037hIT-vnZ_hMiCKfm8'
+                        }
+                    };
+                    if(this.fav!=undefined && this.fav.length!=0){
+                         this.fav.forEach(async (id) => {
+                            const res = await axios.get('https://api.themoviedb.org/3/movie/' +id, options);
+                            this.movies.push(res.data);
+                        })
                         this.loading = false;
-
-                       
                     }
                     else {
                         console.log("no fav");
                         this.loading = false;
                         this.empty = true;
                     }
-                    console.log(this.fav);
-                } else {
-                    console.log("No user is signed in");
-                    
                 }
-            });
-
+                }
         }
-
     },
     mounted(){
-        this.userc = getAuth().currentUser;
         this.loaddata();
     },
     }
@@ -104,8 +133,6 @@ export default {
     align-items:center;
     border-radius:10px;
 }
-/* .list-move, */
-/* apply transition to moving elements */
 .list-enter-active,
 .list-leave-active {
     transition: all 0.5s ease;
@@ -153,24 +180,36 @@ export default {
     z-index: 1000;
     background-color:rgba(0,0,0,0.5);
     color:aqua;
-  
 }
 .movie-cards{
     display:flex;
     justify-content:space-between;
     padding:10px;
     align-items:center;
-    height:60px;
-    width:500px;
+    height:auto;
+    width:80vw; 
     flex-direction:row;
     z-index: 0;
     background-color:white;
     color:rgb(0, 0, 0);
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-
     margin:10px;
-    
+}
+.movie-card-poster{
+    width:400px;
+    z-index: 0;
+    padding:5px;
+    margin:20px;
+    display: flex;
+    border-radius: 20px;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+.movie-cards img{
+    border-radius: 25px;
 }
 .outer-card{
     display:flex;
@@ -184,6 +223,6 @@ export default {
     color:white;
     overflow-y:scroll;
     border-radius:10px;
-    
 }
+
 </style>
