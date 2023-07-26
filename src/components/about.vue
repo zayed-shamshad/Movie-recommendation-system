@@ -1,7 +1,7 @@
 <template>
-    <div class="aboutcard">
+    <div class="w-screen h-screen flex flex-col justify-center items-center text-3xl text-black">
         Hey !! ,I'm Mohammad Zaid, a tech enthusiast and a web developer,an undergrad at IIT Jodhpur.
-        checkout my<a class="portfoliolink" href="https://zayed-shamshad.github.io/profile" target="blank">Portfolio</a>
+        checkout my<a class="portfoliolink" href="https://zayed-shamshad.github.io/profile" target="blank">Profile</a>
     </div>
 </template>
 <script>
@@ -10,23 +10,5 @@ export default {
 }
 </script>
 <style>
-.aboutcard{
-    width:70vw;
-    margin-top:30vh;
-    margin-left:15vw;
-    height:40vh;
-    display:flex;
-    border-radius: 20px;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    background-color:rgba(0,0,0,0.5);
-    text-align:center;
-    font-size:20px;
-    font-family: 'Roboto', sans-serif;
-}
-.portfoliolink{
-    color:aqua;
-    text-decoration:none;
-}
+
 </style>

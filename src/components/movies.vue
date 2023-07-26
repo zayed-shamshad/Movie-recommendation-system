@@ -1,25 +1,26 @@
 <template>
 
-<div class="movie-grid">
-    <div class="title-trending">
-        <h1>Trending Movies</h1>
-    </div>
+<div class="w-screen px-2">
+    
     <div v-if="data==null">
         fetching....
     </div>
+    <div v-else >
+        <div class="title-trending text-xl md:text-4xl">
+           Trending Movies
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-scroll">
 
-    <movie-card v-else
-            :style="{
-                zIndex: '0',
-            }"
+    <movie-card
             v-for="movie in data.results"
             :key="movie.id"
             :id="movie.id"
             :title="movie.title"
             :overview="movie.overview"
-            :links=link + {{movie.poster_path}}
-    >
-</movie-card>
+            :links="link+movie.poster_path">
+     </movie-card>
+    </div>
+    </div>
 </div>
     
 </template>
@@ -60,16 +61,5 @@ getMovies();
     z-index: -1;
   
 }
-.movie-grid{
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-around;
-    width:100vw;
-    background-color:rgba(0,0,0,0.5);
-    margin-top: 10vh;
-    overflow-y: scroll;
-    z-index: -2;
-    height: 85vh;
-}
+
 </style>

@@ -1,9 +1,4 @@
  <template>
-    <div>
-        <div>
-            <img :src="avatar" @click="openprofile" class="openprofile">
-        </div>
-    </div>
     <div class="profile">
         <div class="profileheader">
             Profile
@@ -54,52 +49,15 @@
             </button>
         </div>
     </div>
-    <div class="container" @click="toggle">
-        <div class="bar1"></div>
-        <div class="bar2"></div>
-        <div class="bar3"></div>
-    </div>
-    <div class="menu-bg">
-
-    </div>
-    <div class="nav-menu">
-        <ul>
-            <li>
-                <router-link to="/" @click="toggle">HOME</router-link>
-            </li>
-            <li>
-                <router-link to="/movies" @click="toggle">MOVIES</router-link>
-            </li>
-            <li>
-                <router-link to="/about" @click="toggle">ABOUT US</router-link>
-
-            </li>
-
-        </ul>
-    </div>
-
+    <navbar 
+    :user="store.user"
+    ></navbar>
     <router-view v-slot="{ Component }">
         <transition name="fade">
             <component :is="Component" />
         </transition>
     </router-view>
-
-    <div class="footer">
-        <a class="footerlink" href="https://github.com/zayed-shamshad">
-            <font-awesome-icon :icon="['fab','github']">
-            </font-awesome-icon>
-        </a>
-        <a class="footerlink" href="https://instagram.com/zaid_shamshad">
-            <font-awesome-icon :icon="['fab','instagram']"></font-awesome-icon>
-        </a>
-        <a class="footerlink" href="https://twitter.com/Zaidshamshad2">
-            <font-awesome-icon :icon="['fab','twitter']"></font-awesome-icon>
-        </a>
-        <a class="footerlink" href="https://www.linkedin.com/in/mohammad-zaid-shamshad-611546203/">
-            <font-awesome-icon :icon="['fab','linkedin']"></font-awesome-icon>
-        </a>
-        created by zayed
-    </div>
+    <foot></foot>
 </template> 
 
 
@@ -107,11 +65,15 @@
 import {getAuth} from 'firebase/auth';
 import {GoogleAuthProvider,signInWithPopup} from 'firebase/auth';
 import {onAuthStateChanged,signOut} from 'firebase/auth';
-import poster from './components/poster.vue'
 import { useUserStore } from './stores/store.js'
+import footer from './components/footer.vue'
+import navbar from './components/navbar.vue'
 export default{
   name:'App',
-  components:{'poster': poster},
+  components:{
+  'foot':footer,
+    'navbar':navbar
+},
   data() {
       return{
         email:'email id',
@@ -152,14 +114,13 @@ methods:{
         document.getElementsByTagName('body')[0].classList.remove('overflow');
     },
     openprofile(){
-        document.getElementsByClassName('profile')[0].style.width='30vw';
+        document.getElementsByClassName('profile')[0].style.width='90vw';
         document.getElementsByTagName('body')[0].classList.add('overflow');
     },
     logout(){
         this.closeLogout();
         this.store.setUser(null);
         signOut(getAuth()).then(()=>{
-           
             this.state='LOGIN';
             this.username='username';
             this.avatar='./assets/avatar.png';
@@ -202,18 +163,13 @@ methods:{
             this.closeprofile();
         }
     },
-    toggle:function(){
-        document.getElementsByClassName('container')[0].classList.toggle('change');
-        document.getElementsByClassName('menu-bg')[0].classList.toggle('expand-bg');
-        document.getElementsByTagName('body')[0].classList.toggle('overflow');
-        document.getElementsByClassName('nav-menu')[0].classList.toggle('nav-menu-change');
-    },
 }
 }
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Limelight&display=swap');
+
 
 .footerlink {
     color: white;
@@ -264,28 +220,6 @@ methods:{
     margin-right: 10px;
 }
 
-
-.openprofile {
-    width: 50px;
-    height: 50px;
-    background-color: rgba(0, 0, 0, 0.2);
-    z-index: 1;
-
-    background-size: cover;
-    display: flex;
-    top: 25px;
-    right: 150px;
-    border-radius: 50%;
-    position: absolute;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    justify-content: space-around;
-    border: none;
-    cursor: pointer;
-
-}
-
 .profile {
     position: fixed;
     width: 0vw;
@@ -302,13 +236,6 @@ methods:{
     font-size: 10px;
     transition: all 0.25s ease-in-out;
     overflow-x: hidden;
-}
-
-.avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    margin-bottom: 20px;
 }
 
 .closeprofile {
@@ -461,145 +388,6 @@ methods:{
     color: rgb(255, 255, 255);
 }
 
-.nav-menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    right: 20vw;
-    top: 20vh;
-    background-color: transparent;
-    opacity: 0;
-    transition: all 0.3s ease-in-out;
-    font-size: 2rem;
-    color: white;
-    z-index: 2;
-    width: 40vw;
-    height: 50vh;
-    transform: scale(0);
-}
-
-.nav-menu-change {
-    transform: scale(1);
-    opacity: 1;
-    display: flex;
-}
-
-.nav-menu ul {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-
-}
-
-.nav-menu ul li {
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 20px;
-    opacity: 0.2;
-    transition: all 0.2s 0.1s ease-in-out;
-}
-
-.nav-menu ul li a {
-    text-decoration: none;
-    font-style: none;
-    color: white;
-
-}
-
-.nav-menu-change ul li {
-    opacity: 1;
-}
-
-.nav-menu-change ul li::before {
-    position: absolute;
-    content: "";
-    width: 0;
-    background: rgb(255, 255, 255);
-    display: flex;
-    height: 5px;
-    align-items: center;
-    justify-content: center;
-    /* transform:translateY(50px); */
-    transition: all 0.2s ease-in-out;
-    opacity: 0;
-}
-
-.nav-menu-change ul li:hover::before {
-    opacity: 1;
-    transform: translateY(24px);
-    width: 100%;
-
-
-}
-
-.nav-menu-change ul li:hover {
-    transform: scale(1.1);
-}
-
-.container {
-    display: inline-block;
-    cursor: pointer;
-    position: absolute;
-    top: 30px;
-    right: 50px;
-    z-index: 20;
-}
-
-.bar1,
-.bar2,
-.bar3 {
-    width: 35px;
-    height: 5px;
-    background-color: white;
-    margin: 6px 0;
-    transition: 0.4s;
-}
-
-.change .bar1 {
-    -webkit-transform: rotate(-45deg) translate(-9px, 6px);
-    transform: rotate(-45deg) translate(-9px, 6px);
-}
-
-.change .bar2 {
-    opacity: 0;
-}
-
-.change .bar3 {
-    -webkit-transform: rotate(45deg) translate(-8px, -8px);
-    transform: rotate(45deg) translate(-8px, -8px);
-}
-
-.menu-bg {
-    position: absolute;
-    top: -50px;
-    right: -100px;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    transition: all 0.4s ease-in-out;
-    background: radial-gradient(circle, rgba(255, 0, 0, 0.7) 0%, rgba(255, 0, 0, 0.7) 100%);
-    z-index: 1;
-}
-
-.expand-bg {
-    width: 110vw;
-    height: 110vw;
-    transform: translate(18%, -20%);
-
-}
-
-.overflow {
-    overflow: hidden;
-}
-
 body {
     font-family: 'Cairo', sans-serif;
     background: linear-gradient(to right, rgba(71, 202, 231, 0.5), rgba(43, 200, 124, 0.5), rgba(112, 233, 25, 0.5)), url('/assets/mp.jpg');
@@ -622,102 +410,6 @@ body {
     display: none;
 }
 
-.intro {
-    width: 100vw;
-    top: 0vh;
-    position: absolute;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-family: 'Cairo', sans-serif;
-    color: #ffffff;
-    font-family: 'Limelight', cursive;
-    font-size: 3rem;
-
-}
-
-.description {
-    width: 100vw;
-    top: 100vh;
-    position: absolute;
-    height: 100vh;
-    background-color: rgba(107, 226, 9, 0.2);
-    display: flex;
-    flex-direction: row;
-    font-family: 'Cairo', sans-serif;
-    color: #ffffff;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-
-}
-
-.cards {
-    box-shadow: 5px, 5px, 5px, 5px, rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 25vw;
-    height: 250px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px;
-    font-family: 'Cairo', sans-serif;
-    color: #ffffff;
-    font-size: 2rem;
-}
-
-.title {
-    display: flex;
-    width: 80vw;
-    height: 30vh;
-    justify-content: center;
-    align-items: center;
-    font-size: clamp(40px, 8vw, 80px);
-    background: linear-gradient(to right, rgba(6, 255, 226, 0.5), rgba(178, 237, 27, 0.5));
-
-}
-
-.content {
-    display: flex;
-    width: 60vw;
-    height: 20vh;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.4rem;
-    text-align: center;
-    font-family: Cairo, sans-serif;
-    background: linear-gradient(to right, rgba(6, 255, 226, 0.5), rgba(178, 237, 27, 0.5));
-
-}
-
-.footer {
-    bottom: 0;
-    height: 5vh;
-    width: 100vw;
-    background-color: rgb(0, 0, 0);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Cairo', sans-serif;
-    font-size: 1.2rem;
-    color: #ffffff;
-    position: fixed;
-    padding: 0;
-    box-shadow: 0px 0px 10px #000;
-    margin: 0;
-    left: 0;
-}
-
-.footer svg {
-    margin: 10px;
-}
 
 .fade-enter-active,
 .fade-leave-active {
@@ -737,4 +429,5 @@ body {
 .slide-enter,
 .slide-leave-to {
     transform: translateY(-50%) translateX(100vw);
-}</style>
+}
+</style>

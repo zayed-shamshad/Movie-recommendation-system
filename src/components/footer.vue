@@ -13,6 +13,32 @@
             <a class="footerlink" href="https://www.linkedin.com/in/mohammad-zaid-shamshad-611546203/">
                 <font-awesome-icon :icon="['fab', 'linkedin']"></font-awesome-icon>
             </a>
-            created by zayed
         </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+</script>
+<style scoped>
+.footer {
+    height: 5vh;
+    width: 100vw;
+    
+    background-color: rgb(0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.2rem;
+    color: #ffffff;
+    padding: 0;
+    box-shadow: 0px 0px 10px #000;
+    left: 0;
+    bottom: 0;
+}
+
+.footer svg {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+</style>

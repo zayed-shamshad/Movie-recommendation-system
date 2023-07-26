@@ -1,50 +1,53 @@
 <template>
-    <button class="back_button" @click="goback">
-        <font-awesome-icon icon="arrow-left"></font-awesome-icon>
-    </button>
-    <div v-if="loading" class="loading-fav">
-        fetching....
-    </div>
-    <div v-if="!loading && !empty" class="loading-movies">
-        <div class="outer-card">
-            <transition-group name="list">
-                <div v-for="movie in movies" :key="movie.id" class="movie-cards">
-      <div class="movie-card-poster">
-        <img class="img-responsive" :src="link + movie.poster_path" alt="Movie Poster">
-      </div>
-      <div>
-        <div><h2>{{ movie.title.toUpperCase() }}</h2></div>
-        <p><strong>Overview:</strong> {{ movie.overview }}</p>
-        <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
-        <p><strong>Genres:</strong> {{ movie.genres.map(genre => genre.name).join(', ') }}</p>
-        <p><strong>Runtime:</strong> {{ movie.runtime }} minutes</p>
-        <p><strong>Tagline:</strong> {{ movie.tagline }}</p>
-        <p><strong>Vote Average:</strong> {{ movie.vote_average }}</p>
-         <font-awesome-icon icon="trash" class="trash" @click="trash(movie.id)"></font-awesome-icon>
-      </div>
-    </div>
-            </transition-group>
-        </div>
-    </div>
-    <div v-if="empty" class="loading-fav">
-        <div class="no-fav-message">
-            No movies in your favourite list
+    <div>
+        <!-- Loading state -->
+        <div v-if="loading" class="flex items-center justify-center h-screen">
+            <p class="text-xl text-gray-600">Fetching...</p>
         </div>
 
+        <!-- Movies list -->
+        <div v-else-if="!loading && !empty" class="px-4 py-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <transition-group name="list">
+                    <div v-for="movie in movies" :key="movie.id"
+                        class="shadow-lg rounded-lg overflow-hidden bg-white" >
+                        <div>
+                            <img :src="link + movie.poster_path" alt="Movie Poster" class="w-full h-56 object-cover">
+                        </div>
+                        <div class="p-4 text-black">
+                            <h2 class="text-xl font-semibold mb-2">{{ movie.title.toUpperCase() }}</h2>
+                            <p><strong>Overview:</strong> {{ movie.overview }}</p>
+                            <p><strong>Release Date:</strong> {{ movie.release_date }}</p>
+                            <p><strong>Genres:</strong> {{ movie.genres.map(genre => genre.name).join(', ') }}</p>
+                            <p><strong>Runtime:</strong> {{ movie.runtime }} minutes</p>
+                            <p><strong>Tagline:</strong> {{ movie.tagline }}</p>
+                            <p><strong>Vote Average:</strong> {{ movie.vote_average }}</p>
+                            <button @click="trash(movie.id)"
+                                class="mt-4 inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg focus:outline-none hover:bg-red-600">
+                                <font-awesome-icon icon="trash" class="mr-2"></font-awesome-icon>
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </transition-group>
+            </div>
+        </div>
+
+        <!-- Empty state -->
+        <div v-if="empty" class="flex items-center justify-center h-screen">
+            <p class="text-xl text-gray-600">No movies in your favourite list</p>
+        </div>
     </div>
 </template>
+
 <script>
 import { doc,getDoc } from "firebase/firestore";
 import { db } from '../firebase.js'
 import { setDoc} from "firebase/firestore";
 import { useUserStore } from "../stores/store";
 import axios from "axios";
-import poster from "./poster.vue";
 export default {
     name: 'fav',
-    components:{
-        poster
-    },
     data(){
         return{
             loading:true,
@@ -119,20 +122,6 @@ export default {
     }
 </script>
 <style>
-
-.no-fav-message{
-    font-size:1.5rem;
-    text-align:center;
-    color:rgb(0, 0, 0);
-    background-color:white;
-    width:30vw;
-    height:30vh;
-    display:flex;
-    justify-content:center;
-    font-family: 'Roboto', sans-serif;
-    align-items:center;
-    border-radius:10px;
-}
 .list-enter-active,
 .list-leave-active {
     transition: all 0.5s ease;
@@ -157,72 +146,6 @@ export default {
 }
 .trash:hover{
     transform:scale(1.3);
-}
-.loading-movies{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-    flex-direction: column;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: aqua;
-
-}
-.loading-fav{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    width:100vw;
-    flex-direction:column;
-    z-index: 1000;
-    background-color:rgba(0,0,0,0.5);
-    color:aqua;
-}
-.movie-cards{
-    display:flex;
-    justify-content:space-between;
-    padding:10px;
-    align-items:center;
-    height:auto;
-    width:80vw; 
-    flex-direction:row;
-    z-index: 0;
-    background-color:white;
-    color:rgb(0, 0, 0);
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
-    margin:10px;
-}
-.movie-card-poster{
-    width:400px;
-    z-index: 0;
-    padding:5px;
-    margin:20px;
-    display: flex;
-    border-radius: 20px;
-    flex-direction: column;
-    align-content: center;
-    align-items: center;
-}
-
-.movie-cards img{
-    border-radius: 25px;
-}
-.outer-card{
-    display:flex;
-    justify-content:flex-start;
-    align-items:center;
-    height:85vh;
-    width:85vw;
-    flex-direction:column;
-    z-index: 0;
-    background-color:rgba(0, 0, 0, 0.5);
-    color:white;
-    overflow-y:scroll;
-    border-radius:10px;
 }
 
 </style>

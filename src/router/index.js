@@ -26,7 +26,7 @@ const router = createRouter({
       component: search
     },
     {
-      path: '/fav',
+      path: '/favourites',
       name: 'fav',
       component: fav,
       beforeEnter: (to, from, next) => {
