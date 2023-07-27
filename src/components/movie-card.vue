@@ -4,11 +4,9 @@
            <img class="h-5/6 object-cover w-full" :src="links" alt="Movie Poster">
 
             <div class="flex justify-around items-center h-1/6 flex-col w-full">
-                <div class="flex justify-center items-center text-center text-lg  text-white font-semibold">{{ title.toUpperCase() }}</div>
-                 
-               <div class="flex justify-between row items-center px-3 w-full">
-                
-                   <div class="cursor-pointer" @click="addtofav" v-if="user != null || user != undefined">
+                <div class="h-1/2 px-2 text-sm md:text-lg text-white truncate w-full">{{ title.toUpperCase() }}</div>
+               <div class="h-1/2 flex justify-between row items-center px-3 w-full">
+                   <div class="cursor-pointer" @click="addtofav" v-if="computedUser != null || computedUser != undefined">
                     <div class="text-red-500 text-4xl transition-all hover:scale-150 active:scale-110">
                      <span class="text-xl md:text-4xl">{{ colorofheart ? '❤' : '♡' }}</span>
                     </div>
@@ -16,7 +14,7 @@
                    <div v-else>
 
                    </div>
-                <button @click="showModall"  class="text-white hover:scale-110">
+                <button @click="showModall"  class="text-white hover:scale-110 text-sm md:text-lg">
                     Read More..
                 </button>
             </div>
@@ -25,34 +23,119 @@
       
          <Teleport to="body">
             <transition name="fade" appear>
-            <div class="modal-overlay" v-if="showModal"></div>
+            <div class="modal-overlay" v-if="showModal" @click="close"></div>
             </transition>
-           <transition name="slide" appear>
-            <div v-if="showModal" class="modal">
-            <h1>{{ title }}</h1>
-           <p>{{ overview }}</p>
-           <button class="but" @click="close">
+           <transition name="fade" appear>
+            <div v-if="showModal" class="modal
+                z-50
+                fixed
+                top-1/2
+                left-1/2
+                transform -translate-x-1/2 -translate-y-1/2
+                md:w-3/4
+                lg:w-1/2
+                w-full
+                bg-white
+                shadow-2xl
+                rounded-lg
+                p-8
+            ">
+            <h1 class="
+            text-2xl
+            md:text-4xl
+            font-bold
+            text-gray-800
+
+            ">{{ title }}</h1>
+           <p class="text-sm md:text-lg
+              mt-4
+              text-gray-600
+           ">{{ overview }}</p>
+           <div class="flex flex-row justify-between">
+          
+           <button class="
+              bg-gray-700
+                text-white
+                px-4
+                py-2
+                rounded-lg
+                hover:bg-gray-900
+                transition-all
+                duration-200
+                ease-in-out
+                mt-4
+                md:mt-8
+           " @click="close">
             Close
            </button>
-           <button  class="but" @click="playTrailer">
-            watch trailer
+           <button  class="
+                bg-gray-700
+                text-white
+                px-4
+                py-2
+                rounded-lg
+                hover:bg-gray-900
+                transition-all
+                duration-200
+                ease-in-out
+                mt-4
+                md:mt-8
+           " @click="playTrailer">
+            <font-awesome-icon icon="video" class=""></font-awesome-icon>
            </button>
+             
+               </div>
            </div>
             </transition>
         </Teleport>
 
          <Teleport to="body">
              <transition name="fade" appear>
-                <div class="modal-overlay" v-if="showModal"></div>
+                <div class="modal-overlay" v-if="playVideo"></div>
                 </transition>
-                  <transition name="slide" appear>
-                <div v-if="playVideo" class="modal">
-                 <YouTube 
-                src="https://www.youtube.com/watch?v=jNQXAC9IVRw" 
+                  <transition name="fade" appear>
+                <div v-if="playVideo" class="flex
+                 flex-col
+                  items-center
+                   justify-between
+                    bg-white fixed
+                     top-1/2 left-1/2
+                      transform -translate-x-1/2 -translate-y-1/2 z-50
+                          md:w-3/4
+                            lg:w-1/2
+                             w-full
+                            shadow-2xl
+                            h-1/2
+                            md:h-3/4
+                            rounded-lg
+                      "
+                      
+                      >
+                      <VueYtframe
+                    ref="yt"
+                    :video-id="trailerID"
+                    @ready="onReady"
+                    />
+                 <!-- <YouTube 
+                :src=trailerID
                 @ready="onReady"
-                ref="youtube" />
-                 <button class="but" @click="playVideo=false">
-                Close
+                :height="auto"
+            
+
+                ref="youtube" /> -->
+                 <button class="
+                  bg-gray-700
+                text-white
+                px-4
+                py-2
+                rounded-lg
+                hover:bg-gray-900
+                transition-all
+                duration-200
+                ease-in-out
+                m-2
+                 " @click="playVideo=false">
+                <font-awesome-icon icon="close" class=""></font-awesome-icon>
                </button>
                 </div>
                 </transition>
@@ -65,7 +148,8 @@ import { useUserStore } from "../stores/store";
 import { db } from '../firebase.js'
 import { arrayUnion } from "firebase/firestore";
 import { doc, updateDoc,setDoc, getDoc } from "firebase/firestore";
-import YouTube from 'vue3-youtube'
+import YouTube from 'vue3-youtube';
+import axios from "axios";
 const props=defineProps({
     id:Number,
     title:String,
@@ -78,16 +162,34 @@ const fav=ref([]);
 const color=ref(false);
 const showModal=ref(false);
 const playVideo=ref(false);
+const trailerID=ref("");
 
 const onReady = function (event) {
     // access to player in all event handlers via event.target
     event.target.playVideo();
   }
 
-const playTrailer=function(){
+const options = {
+    method: 'GET',
+    headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZDYzMzQ1MzIxMTQwNDhmN2VlYTA3OGVkMTBlM2EwOSIsInN1YiI6IjYyNmFmOGFlOWI2ZTQ3MDBhNDVhODAyNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MIBeEiA5qadK-dRQi1FYcNiZ037hIT-vnZ_hMiCKfm8'
+    }
+};
+const getTrailer = async () => {
+    const response = await axios.get('https://api.themoviedb.org/3/movie/'+props.id+'/videos', options)
+    trailerID.value =response.data.results.filter((video)=>video.type=="Trailer")[0].key;
+}
+
+const playTrailer=async function(){
+    await getTrailer();
     showModal.value=false;
     playVideo.value=true;
 }
+const computedUser=computed(()=>{
+    user.value=userstore.user;
+    return user.value;
+})
 
 const colorofheart=computed(()=>{
     if (fav.value.find((ID) => ID == props.id)) {
@@ -156,49 +258,13 @@ const addtofav=async()=>{
 </script>
 <style>
 .modal-overlay {
-z-index: 100000;
+z-index: 40;
  position: fixed;
  top: 0;
  left: 0;
  right: 0;
  bottom: 0;
  background-color: rgba(0, 0, 0, 0.3);
-}
-.modal {
-    z-index: 10000000;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 60%;
-    max-width: 400px;
-    background-color: #FFF;
-    border-radius: 16px;
-    padding: 25px;
-}
-.modal h1{ 
-  color: #222;
-  font-size: 32px;
-  font-weight: 900;
-  margin-bottom: 15px;
-}
- .modal p{
-  color: #666;
-  font-size: 18px;
-  font-weight: 400;
-  margin-bottom: 15px;
- }
- .but{
-    background-color: #222;
-    color: #FFF;
-    border: none;
-    padding: 10px;
-    border-radius: 16px;
-    font-size: 16px;
-    font-weight: 900;
-    cursor: pointer;
-    margin-top: 15px;
- }
- 
+} 
 
 </style>

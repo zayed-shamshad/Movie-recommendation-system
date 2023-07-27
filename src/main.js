@@ -12,11 +12,13 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
+import VueYtframe from "vue3-ytframe";
 const app = createApp(App)
 library.add(fas, fab)
 app.use(pinia)
 
 app.use()
 app.use(router);
+ app.use(VueYtframe)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.mount('#app')

@@ -1,12 +1,18 @@
 <template>
-    <div>
+    <div class="">
         <!-- Loading state -->
-        <div v-if="loading" class="flex items-center justify-center h-screen">
-            <p class="text-xl text-gray-600">Fetching...</p>
+        <div v-if="loading" class="flex items-center justify-center h-screen w-screen">
+            <pulse-loader :loading="load" :color="'red'" :size="'50px'" :margin="'2px'" :speed="'1s'" :trail="'10'"
+              :shadow="'0'" :shadowColor="'#fff'" :shadowSize="'0'" :radius="'10px'"></pulse-loader>
         </div>
 
         <!-- Movies list -->
-        <div v-else-if="!loading && !empty" class="px-4 py-8">
+        <div v-else-if="!loading && !empty" class="min-h-screen">
+            <div class="flex flex-row justify-center text-4xl text-white
+            title-trending text-xl md:text-4xl
+            ">
+                Favourites
+            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <transition-group name="list">
                     <div v-for="movie in movies" :key="movie.id"
@@ -35,7 +41,9 @@
 
         <!-- Empty state -->
         <div v-if="empty" class="flex items-center justify-center h-screen">
-            <p class="text-xl text-gray-600">No movies in your favourite list</p>
+            <div>
+                <font-awesome-icon icon="exclamation-triangle" class="text-red-500 text-8xl"></font-awesome-icon>
+            </div>
         </div>
     </div>
 </template>
@@ -45,9 +53,13 @@ import { doc,getDoc } from "firebase/firestore";
 import { db } from '../firebase.js'
 import { setDoc} from "firebase/firestore";
 import { useUserStore } from "../stores/store";
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 import axios from "axios";
 export default {
     name: 'fav',
+    components: {
+        PulseLoader
+    },
     data(){
         return{
             loading:true,

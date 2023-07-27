@@ -1,12 +1,14 @@
 <template>
-  <nav class="bg-red-600 py-4 px-6">
+  <nav class="bg-red-600 py-4 px-6 w-screen">
     <div class="flex items-center justify-between">
       <!-- User Avatar and Email -->
       <div class="flex items-center">
-        <div class="w-10 h-10 rounded-full overflow-hidden cursor-pointer" @click="openprofile">
-          <img :src="user.photoURL" alt="User Avatar" class="w-full h-full object-cover">
+        <div class="w-10 h-10 rounded-full overflow-hidden cursor-pointer">
+          <img v-if="computedUser!=null" :src="user.photoURL" alt="User Avatar" class="w-full h-full object-cover">
+          <img v-else src="../assets/avatar.png" alt="User Avatar" class="w-full h-full object-cover">
         </div>
-        <span class="text-white ml-2 font-semibold">{{ user.email }}</span>
+        <span v-if="computedUser==null" class="text-white ml-2 font-semibold cursor-pointer" @click="showMenu('Login')">Sign in</span>
+        <span v-else class="text-white ml-2 font-semibold cursor-pointer" @click="showMenu('Logout')">Log out</span>
       </div>
 
       <!-- Mobile View: Menu Icon -->
@@ -20,10 +22,9 @@
       </div>
 
       <!-- Desktop View: Navigation Options -->
-      <ul class="hidden md:flex space-x-4 text-white">
+      <ul class="hidden md:flex space-x-4 text-white text-xl">
         <router-link to="/home">Home</router-link>
-        <router-link to="/favourites">Favourites</router-link>
-        <router-link to="/about">About</router-link>
+        <router-link v-if="computedUser" to="/favourites">Favourites</router-link>
         <router-link to="/movies">Movies</router-link>
         <router-link to="/search">Search</router-link>
       </ul>
@@ -35,11 +36,11 @@
         <router-link to="/home">
           <li>Home</li>
         </router-link>
-        <router-link to="/favourites">
+        <router-link 
+        v-if="computedUser"
+        to="/favourites" 
+        >
           <li>Favourites</li>
-        </router-link>
-        <router-link to="/about">
-          <li>About</li>
         </router-link>
         <router-link to="/movies">
           <li>Movies</li>
@@ -54,20 +55,32 @@
 
 <script setup>
 import { ref } from 'vue';
-
+import { computed } from 'vue';
+import {defineEmits } from 'vue';
+import { useUserStore } from '../stores/store';
+const userstore = useUserStore();
+const user=ref(null)
+user.value=userstore.getUser;
+console.log(user.value);
 const showMobileMenu = ref(false);
 
-const props = defineProps({
-  user: Object,
+const emits = defineEmits(['changeState']);
+
+const computedUser = computed(() => {
+  user.value=userstore.getUser;
+  return user.value;
 });
+
+function showMenu(state) {
+  console.log("trying");
+  emits("changeState", state);
+}
+
 
 function toggleMobileMenu() {
   showMobileMenu.value = !showMobileMenu.value;
 }
 
-function openprofile() {
-  // Implement your open profile logic here
-}
 </script>
 
 <style>
