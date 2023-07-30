@@ -32,9 +32,9 @@
         >Now Playing</router-link>
     </div>
       <router-view v-slot="{ Component }">
-            <transition name="fade">
+            <!-- <transition name="fade"> -->
                 <component :is="Component" />
-            </transition>
+            <!-- </transition> -->
         </router-view>
     </div>
 </template>

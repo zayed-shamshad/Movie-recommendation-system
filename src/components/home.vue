@@ -1,6 +1,6 @@
 <template>
     <div class="w-screen h-screen flex justify-center items-center flex-col">
-        <div class="text-4xl w-screen h-full flex flex-col justify-between items-center text-white  bg-gray-900   bg-opacity-50 ">
+        <div class="text-2xl w-screen h-full flex flex-col justify-between items-center text-white  bg-gray-900   bg-opacity-50 ">
             <div class="h-1/6 w-screen flex flex-col justify-center items-center">
                  <button
             class="text-white bg-red-500 rounded-lg p-4"

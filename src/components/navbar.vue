@@ -1,6 +1,6 @@
 <template>
-  <nav class="bg-red-600 py-4 px-6 w-screen">
-    <div class="flex items-center justify-between">
+  <nav class="bg-red-600 py-4 w-screen">
+    <div class="flex items-center justify-between px-4">
       <!-- User Avatar and Email -->
       <div class="flex items-center">
         <div class="w-10 h-10 rounded-full overflow-hidden cursor-pointer">
@@ -31,8 +31,9 @@
     </div>
 
     <!-- Mobile View: Responsive Menu -->
-    <div v-if="showMobileMenu" class="mt-2 md:hidden">
-      <ul class="space-y-2 text-white">
+    <transition name="nested" :duration="550">   
+    <div v-if="showMobileMenu" class=" mt-2 z-50 px-2 md:hidden absolute bg-red-600 w-screen flex justify-center flex-col items-center outer">
+      <ul class="space-y-2 text-white inner">
         <router-link to="/home">
           <li>Home</li>
         </router-link>
@@ -50,6 +51,7 @@
         </router-link>
       </ul>
     </div>
+     </transition>
   </nav>
 </template>
 
@@ -72,7 +74,6 @@ const computedUser = computed(() => {
 });
 
 function showMenu(state) {
-  console.log("trying");
   emits("changeState", state);
 }
 
@@ -95,5 +96,40 @@ function toggleMobileMenu() {
   .md\\:hidden {
     display: none;
   }
+
+}
+.nested-enter-active, .nested-leave-active {
+	transition: all 0.3s ease-in-out;
+}
+/* delay leave of parent element */
+.nested-leave-active {
+  transition-delay: 0.25s;
+}
+
+.nested-enter-from,
+.nested-leave-to {
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+/* we can also transition nested elements using nested selectors */
+.nested-enter-active .inner,
+.nested-leave-active .inner { 
+  transition: all 0.3s ease-in-out;
+}
+/* delay enter of nested element */
+.nested-enter-active .inner {
+	transition-delay: 0.25s;
+}
+
+.nested-enter-from .inner,
+.nested-leave-to .inner {
+  transform: translateX(30px);
+  /*
+  	Hack around a Chrome 96 bug in handling nested opacity transitions.
+    This is not needed in other browsers or Chrome 99+ where the bug
+    has been fixed.
+  */
+  opacity: 0.001;
 }
 </style>

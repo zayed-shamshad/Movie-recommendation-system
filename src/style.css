@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities{
+.bg-image-3 {
+    background-image: url('assets/interstellarposter.jpg');
+
+    background-position: center;
+    background-repeat: no-repeat, repeat;
+ 
+    background-size: 100%;
+}
+
+.bg-image-2 {
+    background-image: url('/assets/johnwick.jpg'), url('assets/interstellarposter.jpg');
+    background-position: center;
+    background-repeat: no-repeat, no-repeat;
+    background-size: 100%;
+
+}
+
+.bg-image-1 {
+    background-image: url('/assets/2001.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+}

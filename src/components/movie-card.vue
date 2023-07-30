@@ -18,15 +18,13 @@
                     Read More..
                 </button>
             </div>
-            </div>
-            </div>
-      
-         <Teleport to="body">
-            <transition name="fade" appear>
-            <div class="modal-overlay" v-if="showModal" @click="close"></div>
-            </transition>
-           <transition name="fade" appear>
-            <div v-if="showModal" class="modal
+    </div>
+      <Teleport to="body">
+                <transition name="fade" appear>
+                <div class="modal-overlay" v-if="showModal" @click="close"></div>
+                </transition>
+               <transition name="fade" appear>
+                <div v-if="showModal" class="modal
                 z-50
                 fixed
                 top-1/2
@@ -40,20 +38,20 @@
                 rounded-lg
                 p-8
             ">
-            <h1 class="
+                <h1 class="
             text-2xl
             md:text-4xl
             font-bold
             text-gray-800
 
             ">{{ title }}</h1>
-           <p class="text-sm md:text-lg
+               <p class="text-sm md:text-lg
               mt-4
               text-gray-600
            ">{{ overview }}</p>
-           <div class="flex flex-row justify-between">
+               <div class="flex flex-row justify-between">
           
-           <button class="
+               <button class="
               bg-gray-700
                 text-white
                 px-4
@@ -66,9 +64,9 @@
                 mt-4
                 md:mt-8
            " @click="close">
-            Close
-           </button>
-           <button  class="
+                Close
+               </button>
+               <button  class="
                 bg-gray-700
                 text-white
                 px-4
@@ -81,20 +79,20 @@
                 mt-4
                 md:mt-8
            " @click="playTrailer">
-            <font-awesome-icon icon="video" class=""></font-awesome-icon>
-           </button>
+                <font-awesome-icon icon="video" class=""></font-awesome-icon>
+               </button>
              
+                   </div>
                </div>
-           </div>
-            </transition>
-        </Teleport>
-
-         <Teleport to="body">
-             <transition name="fade" appear>
-                <div class="modal-overlay" v-if="playVideo"></div>
                 </transition>
-                  <transition name="fade" appear>
-                <div v-if="playVideo" class="flex
+            </Teleport>
+
+             <Teleport to="body">
+                 <transition name="fade" appear>
+                    <div class="modal-overlay" v-if="playVideo"></div>
+                    </transition>
+                      <transition name="fade" appear>
+                    <div v-if="playVideo" class="flex
                  flex-col
                   items-center
                    justify-between
@@ -110,20 +108,14 @@
                             rounded-lg
                       "
                       
-                      >
-                      <VueYtframe
-                    ref="yt"
-                    :video-id="trailerID"
-                    @ready="onReady"
-                    />
-                 <!-- <YouTube 
-                :src=trailerID
-                @ready="onReady"
-                :height="auto"
-            
-
-                ref="youtube" /> -->
-                 <button class="
+                          >
+                          <VueYtframe
+                        ref="yt"
+                        :video-id="trailerID"
+                        @ready="onReady"
+                        />
+                   
+                     <button class="
                   bg-gray-700
                 text-white
                 px-4
@@ -134,13 +126,13 @@
                 duration-200
                 ease-in-out
                 m-2
-                 " @click="playVideo=false">
-                <font-awesome-icon icon="close" class=""></font-awesome-icon>
-               </button>
-                </div>
-                </transition>
-        </Teleport>
-          
+                 " @click="playVideo = false">
+                    <font-awesome-icon icon="close" class=""></font-awesome-icon>
+                   </button>
+                    </div>
+                    </transition>
+            </Teleport>
+</div>    
 </template>
 <script setup>
 import { computed, onMounted, ref } from 'vue'
@@ -148,7 +140,6 @@ import { useUserStore } from "../stores/store";
 import { db } from '../firebase.js'
 import { arrayUnion } from "firebase/firestore";
 import { doc, updateDoc,setDoc, getDoc } from "firebase/firestore";
-import YouTube from 'vue3-youtube';
 import axios from "axios";
 const props=defineProps({
     id:Number,

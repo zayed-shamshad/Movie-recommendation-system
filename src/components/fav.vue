@@ -14,7 +14,7 @@
                 Favourites
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <transition-group name="list">
+                <transition-group name="fade">
                     <div v-for="movie in movies" :key="movie.id"
                         class="shadow-lg rounded-lg overflow-hidden bg-white" >
                         <div>
@@ -134,22 +134,7 @@ export default {
     }
 </script>
 <style>
-.list-enter-active,
-.list-leave-active {
-    transition: all 0.5s ease;
-}
 
-.list-enter-from,
-.list-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
-
-/* ensure leaving items are taken out of layout flow so that moving
-   animations can be calculated correctly. */
-.list-leave-active {
-    position: absolute;
-}
 .trash{
   cursor:pointer;
   color:red;
