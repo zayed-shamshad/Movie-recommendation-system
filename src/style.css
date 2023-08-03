@@ -4,7 +4,7 @@
 
 @layer utilities{
 .bg-image-3 {
-    background-image: url('assets/interstellarposter.jpg');
+    background-image: url('/assets/interstellarposter.jpg');
 
     background-position: center;
     background-repeat: no-repeat;
