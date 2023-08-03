@@ -1,6 +1,6 @@
 <template>
 <div class="h-screen w-screen flex flex-col justify-between
- bg-image-1
+  bg-image-1
   md:bg-image-2
   lg:bg-image-3
 ">
