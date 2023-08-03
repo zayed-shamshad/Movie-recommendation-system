@@ -107,7 +107,7 @@ export default {
                         this.fav = docSnap.data().fav;
                     if(this.fav!=undefined && this.fav.length!=0){
                          this.fav.forEach(async (id) => {
-                            const res = await axios.get("https://movie-system-api.onrender.com/movie_data?movie_id"+id);
+                            const res = await axios.get("https://movie-system-api.onrender.com/movie_data?movie_id="+id);
                             this.movies.push(res.data);
                         })
                         this.loading = false;
