@@ -36,7 +36,6 @@ import { ref } from 'vue'
     left: 0;
     bottom: 0;
 }
-
 .footer svg {
     margin-left: 10px;
     margin-right: 10px;

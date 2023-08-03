@@ -105,16 +105,9 @@ export default {
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
                         this.fav = docSnap.data().fav;
-                        const options = {
-                        method: 'GET',
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZDYzMzQ1MzIxMTQwNDhmN2VlYTA3OGVkMTBlM2EwOSIsInN1YiI6IjYyNmFmOGFlOWI2ZTQ3MDBhNDVhODAyNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MIBeEiA5qadK-dRQi1FYcNiZ037hIT-vnZ_hMiCKfm8'
-                        }
-                    };
                     if(this.fav!=undefined && this.fav.length!=0){
                          this.fav.forEach(async (id) => {
-                            const res = await axios.get('https://api.themoviedb.org/3/movie/' +id, options);
+                            const res = await axios.get("https://movie-system-api.onrender.com/movie_data?movie_id"+id);
                             this.movies.push(res.data);
                         })
                         this.loading = false;

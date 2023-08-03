@@ -160,15 +160,8 @@ const onReady = function (event) {
     event.target.playVideo();
   }
 
-const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZDYzMzQ1MzIxMTQwNDhmN2VlYTA3OGVkMTBlM2EwOSIsInN1YiI6IjYyNmFmOGFlOWI2ZTQ3MDBhNDVhODAyNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MIBeEiA5qadK-dRQi1FYcNiZ037hIT-vnZ_hMiCKfm8'
-    }
-};
 const getTrailer = async () => {
-    const response = await axios.get('https://api.themoviedb.org/3/movie/'+props.id+'/videos', options)
+    const response = await axios.get('https://movie-system-api.onrender.com/trailer?id='+props.id)
     trailerID.value =response.data.results.filter((video)=>video.type=="Trailer")[0].key;
 }
 

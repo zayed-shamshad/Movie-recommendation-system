@@ -30,21 +30,12 @@ import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 const load=ref(true)
 const link = "https://image.tmdb.org/t/p/w500";
 const data = ref(null);
-const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZDYzMzQ1MzIxMTQwNDhmN2VlYTA3OGVkMTBlM2EwOSIsInN1YiI6IjYyNmFmOGFlOWI2ZTQ3MDBhNDVhODAyNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MIBeEiA5qadK-dRQi1FYcNiZ037hIT-vnZ_hMiCKfm8'
-    }
-};
-
-
-const getMovies = async () => {
-    const response = await axios.get('https://api.themoviedb.org/3/movie/upcoming', options)
-    data.value = response.data
-    load.value=false;
+const getMovies_flask = async () => {
+    const response = await axios.get('https://movie-system-api.onrender.com/upcoming')
+    data.value = response.data;
+    load.value = false;
 }
-getMovies()
+getMovies_flask()
 
 
 

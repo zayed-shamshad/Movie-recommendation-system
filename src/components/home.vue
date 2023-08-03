@@ -3,11 +3,16 @@
         <div class="text-2xl w-screen h-full flex flex-col justify-between items-center text-white  bg-gray-900   bg-opacity-50 ">
             <div class="h-1/6 w-screen flex flex-col justify-center items-center">
                  <button
-            class="text-white bg-red-500 rounded-lg p-4"
+            class="rounded-lg p-4
+            btn relative inline-flex items-center justify-start overflow-hidden transition-all bg-red-500 text-white rounded hover:bg-white group
+            "
              @click="() => {
                  $router.push('/search');
              }">
-                Get started
+      <span className="w-0 h-0 rounded bg-white absolute top-0 left-0 ease-out duration-200 transition-all group-hover:w-full group-hover:h-full -z-1"></span>
+      <span className="w-full text-white transition-colors duration-100 ease-in-out group-hover:text-red-500 z-10">
+            Get started
+      </span>
             </button>
         </div>
          <div class="w-4/5 h-5/6 flex justify-center items-center">
@@ -21,26 +26,15 @@
                 </Carousel>
         </div>
     </div>
-        
-    </div>
+</div>
 </template>
 <script setup>
 import { onMounted, ref } from 'vue'
 import 'vue3-carousel/dist/carousel.css'
 import { Carousel, Slide,Pagination, Navigation } from 'vue3-carousel'
 import axios from 'axios'
-import movieCard from './movie-card.vue'
-
 const link="https://image.tmdb.org/t/p/w500"
 const data=ref(null)
-const options = {
-    method: 'GET',
-    headers: {
-        accept: 'application/json',
-        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZDYzMzQ1MzIxMTQwNDhmN2VlYTA3OGVkMTBlM2EwOSIsInN1YiI6IjYyNmFmOGFlOWI2ZTQ3MDBhNDVhODAyNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MIBeEiA5qadK-dRQi1FYcNiZ037hIT-vnZ_hMiCKfm8'
-    }
-};
-
 const settings={
      itemsToShow: 1,
     snapAlign: 'center',
@@ -57,8 +51,9 @@ const breakpoints={
             snapAlign: 'start',
         },
 }
+
 onMounted(async()=>{
-    const res=await axios.get("https://api.themoviedb.org/3/trending/movie/day",options)
+    const res= await axios.get('https://movie-system-api.onrender.com/trending');
     data.value=res.data.results
     console.log(data.value)
 })

@@ -7,8 +7,10 @@
           <img v-if="computedUser!=null" :src="user.photoURL" alt="User Avatar" class="w-full h-full object-cover">
           <img v-else src="../assets/avatar.png" alt="User Avatar" class="w-full h-full object-cover">
         </div>
-        <span v-if="computedUser==null" class="text-white ml-2 font-semibold cursor-pointer" @click="showMenu('Login')">Sign in</span>
-        <span v-else class="text-white ml-2 font-semibold cursor-pointer" @click="showMenu('Logout')">Log out</span>
+        <span v-if="computedUser==null" class="ml-2 font-semibold cursor-pointer
+         hover:bg-red-500 hover:text-white transition duration-200 ease-in
+         bg-white text-black px-2 py-1 rounded-sm" @click="showMenu('Login')">Login/Sign up</span>
+        <span v-else class="ml-2 font-semibold cursor-pointer hover:bg-red-500 hover:text-white transition duration-200 ease-in bg-white rounded-sm text-black px-2 py-1" @click="showMenu('Logout')">Log out</span>
       </div>
 
       <!-- Mobile View: Menu Icon -->
@@ -22,11 +24,11 @@
       </div>
 
       <!-- Desktop View: Navigation Options -->
-      <ul class="hidden md:flex space-x-4 text-white text-xl">
-        <router-link to="/home">Home</router-link>
-        <router-link v-if="computedUser" to="/favourites">Favourites</router-link>
-        <router-link to="/movies">Movies</router-link>
-        <router-link to="/search">Search</router-link>
+      <ul class="hidden md:flex space-x-8 text-white text-xl font-mono">
+        <router-link class="hover:bg-white hover:text-red-600 px-2 transition duration-150 ease-out"  to="/home">Home</router-link>
+        <router-link class="hover:bg-white hover:text-red-600 px-2 transition duration-150 ease-out"            v-if="computedUser" to="/favourites">Favourites</router-link>
+        <router-link class="hover:bg-white hover:text-red-600 px-2 transition duration-150 ease-out" to="/movies">Movies</router-link>
+        <router-link class="hover:bg-white hover:text-red-600 px-2 transition duration-150 ease-out" to="/search">Search</router-link>
       </ul>
     </div>
 
