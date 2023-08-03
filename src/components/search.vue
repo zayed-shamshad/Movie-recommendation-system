@@ -77,7 +77,7 @@ export default {
             this.initial = false;
             this.errornotfound = false;
             this.load = true;
-            const path = "http://127.0.0.1:5000/movie?s="+this.movie;
+            const path = "https://movie-system-api.onrender.com/movie?s="+this.movie;
             console.log(this.movie);
             try{
                 const response =await axios.get(path)
