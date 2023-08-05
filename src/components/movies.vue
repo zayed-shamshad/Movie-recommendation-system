@@ -10,7 +10,7 @@
         <div class="title-trending text-xl md:text-4xl">
            Trending
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 overflow-scroll px-2">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 overflow-scroll px-2">
         <transition-group name="fade" mode="out-in">
             <movie-card
                     v-for="movie in data.results"

@@ -112,7 +112,7 @@
                           <VueYtframe
                         ref="yt"
                         :video-id="trailerID"
-                        @ready="onReady"
+                        
                         />
                    
                      <button class="
@@ -155,10 +155,6 @@ const showModal=ref(false);
 const playVideo=ref(false);
 const trailerID=ref("");
 
-const onReady = function (event) {
-    // access to player in all event handlers via event.target
-    event.target.playVideo();
-  }
 
 const getTrailer = async () => {
     const response = await axios.get('https://movie-system-api.onrender.com/trailer?id='+props.id)
@@ -189,13 +185,10 @@ const getfav=async()=>{
     if (user.value != null) {
         const docRef = doc(db, "users", user.value.email);
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            if (docSnap.data().fav != undefined) {
-                fav.value = docSnap.data().fav;
-            }
-        }
+        fav.value = docSnap.data().fav;
+        console.log("fav:" + fav.value);
     }
-    }
+}
 
 const showModall=function() {
         showModal.value = !showModal.value;
@@ -212,31 +205,28 @@ const close=function() {
 
 })
 const addtofav=async()=>{
-    console.log("i was clicked",props.id,props.title)
-    if (user.value != null) {
-         if (fav.value.find((ID) =>ID==props.id)) {
-              color.value = false;
-                fav.value =fav.value.filter((id) => {
-                return id != props.id;
-            })
+         await getfav();
+         if (fav.value.includes(props.id)){
+                color.value = false;
+                console.log("removed1: " + fav.value);
+                const filteredArray = fav.value.filter((id) => id !== props.id);
+                fav.value = filteredArray;
+                console.log("removed2: " + fav.value);
+
             await setDoc(doc(db, "users", user.value.email)
                 , {
                     fav: fav.value
                 }
             );
-           
          }
          else{
             color.value = true;
-            await updateDoc(
-                doc(db, "users", user.value.email),
-                {
-                    fav:arrayUnion(props.id)
-                }
-           )
+            console.log("added:" + props.id);
+            await updateDoc(doc(db, "users", user.value.email), {
+                fav: arrayUnion(props.id)
+            });
         }
-        await getfav();
-    }
+       await getfav();
 }
 
 </script>

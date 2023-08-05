@@ -62,6 +62,7 @@ import { ref } from 'vue';
 import { computed } from 'vue';
 import {defineEmits } from 'vue';
 import { useUserStore } from '../stores/store';
+import { useRouter } from 'vue-router';
 const userstore = useUserStore();
 const user=ref(null)
 user.value=userstore.getUser;
@@ -72,6 +73,11 @@ const emits = defineEmits(['changeState']);
 
 const computedUser = computed(() => {
   user.value=userstore.getUser;
+  if(user.value==null && useRouter().currentRoute.value.path=="/favourites"
+  ){
+    useRouter().push("/home");
+   
+  }
   return user.value;
 });
 

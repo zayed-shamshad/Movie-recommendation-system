@@ -82,9 +82,6 @@ export default {
         }
     },
     methods:{
-        goback() {
-            this.$router.push('/');
-        },
       async trash(movie){
             this.fav=this.fav.filter((m)=>{
                 return m!=movie;

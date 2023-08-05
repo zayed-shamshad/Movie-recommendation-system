@@ -28,7 +28,8 @@
             transition-all
             duration-200
             ease-in-out
-            md:w-1/6
+            md:w-2/6
+            lg:w-1/6
             h-1/6
             text-black
             bg-white
@@ -109,8 +110,10 @@ import {getAuth} from 'firebase/auth';
 import {GoogleAuthProvider,signInWithPopup} from 'firebase/auth';
 import {onAuthStateChanged,signOut} from 'firebase/auth';
 import { useUserStore } from './stores/store.js'
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import footer from './components/footer.vue'
 import navbar from './components/navbar.vue'
+import { db } from './firebase.js'
 
 
 export default{
@@ -131,6 +134,7 @@ export default{
   }
 ,
 created(){
+    this.store = useUserStore();
     onAuthStateChanged(getAuth(), (user) => {
             console.log("state changed !")
             if (user) {
@@ -173,9 +177,16 @@ methods:{
     },
      googlesignup (){
          var provider = new GoogleAuthProvider();
-      
-         signInWithPopup(getAuth(), provider).then(function(result) {
-               this.store.setUser(result.user);
+         signInWithPopup(getAuth(), provider).then(async function(result) {
+              useUserStore().setUser(result.user);
+                const docref = doc(db, "users", result.user.email);
+                const docSnap = await getDoc(docref);
+                if (!docSnap.exists()) {
+                    await setDoc(docref, {
+                        fav: []
+                    });
+                    console.log("Document written with ID: ", result.user.email);
+                }
         }).catch(function(error) {
             console.log(error);
         });
